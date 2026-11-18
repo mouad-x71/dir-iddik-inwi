@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#4B1669" />
+  <meta name="description" content="Plateforme collaborative de volontariat Dir Iddik · Classes Connectées (inwi) : missions terrain, suivi des 40 écoles rurales et pilotage RSE sur les 12 régions du Maroc." />
+  <meta property="og:title" content="Dir Iddik · Classes Connectées | Plateforme Collaborative inwi" />
+  <meta property="og:description" content="Rejoignez les bénévoles Dir Iddik pour connecter les écoles primaires rurales du Maroc." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Ccircle cx='60' cy='60' r='58' fill='%23A61C6C'/%3E%3Cpath d='M60 88c-18-12-28-23-28-35 0-9 7-16 15-16 6 0 11 3 13 8 2-5 7-8 13-8 8 0 15 7 15 16 0 12-10 23-28 35z' fill='white'/%3E%3C/svg%3E" />
+  <title>Dir Iddik · Classes Connectées | Plateforme Collaborative inwi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --inwi-magenta: #A61C6C;
+      --inwi-magenta-dark: #7E1251;
+      --inwi-magenta-light: #FDF2F8;
+      --inwi-violet: #4B1669;
+      --inwi-violet-dark: #310B47;
+      --inwi-teal: #18828C;
+      --inwi-bg: #FAF7FC;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: var(--inwi-bg);
+      color: #1F1627;
+      overflow-x: hidden;
+    }
+
+    .bg-inwi-magenta { background-color: var(--inwi-magenta); }
+    .hover\:bg-inwi-magenta-dark:hover { background-color: var(--inwi-magenta-dark); }
+    .text-inwi-magenta { color: var(--inwi-magenta); }
+    .border-inwi-magenta { border-color: var(--inwi-magenta); }
+
+    .bg-inwi-violet { background-color: var(--inwi-violet); }
+    .text-inwi-violet { color: var(--inwi-violet); }
+    .border-inwi-violet { border-color: var(--inwi-violet); }
+
+    .bg-inwi-teal { background-color: var(--inwi-teal); }
+    .text-inwi-teal { color: var(--inwi-teal); }
+
+    .hero-gradient {
+      background: linear-gradient(135deg, #3D0E58 0%, #6D1769 52%, #A61C6C 100%);
+    }
+
+    /* Mode Bas Débit (Zone Rurale) */
+    body.low-data-mode .hero-gradient {
+      background: #4B1669 !important;
+    }
+    body.low-data-mode * {
+      box-shadow: none !important;
+      transition: none !important;
+      animation: none !important;
+    }
+    body.low-data-mode .decorative-blur {
+      display: none !important;
+    }
+
+    /* Onglets de navigation 3D Mauve */
+    .nav-3d {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.48rem 0.78rem;
+      border-radius: 0.85rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #4B1669;
+      background: linear-gradient(180deg, #FFFFFF 0%, #F5ECF9 100%);
+      border: 1.5px solid #E5D0F0;
+      box-shadow: 0 4px 0 #D8B8E8, 0 6px 14px rgba(75, 22, 105, 0.08);
+      transform: translateY(0);
+      transition: transform 0.14s ease, box-shadow 0.14s ease, background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .nav-3d:hover {
+      background: linear-gradient(180deg, #FDF5FA 0%, #F5DCF0 100%);
+      border-color: #C97AB2;
+      color: #A61C6C;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 #C97AB2, 0 10px 20px rgba(166, 28, 108, 0.16);
+    }
+    .nav-3d:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #C97AB2, 0 2px 6px rgba(166, 28, 108, 0.14);
+    }
+    .nav-3d.active {
+      color: #FFFFFF;
+      background: linear-gradient(180deg, #B82379 0%, #8D155B 100%);
+      border-color: #6B0E44;
+      box-shadow: 0 4px 0 #5C0A3A, 0 10px 22px rgba(166, 28, 108, 0.35), inset 0 1px 0 rgba(255,255,255,0.28);
+      transform: translateY(-1px);
+    }
+    .nav-3d.active:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #5C0A3A, 0 4px 10px rgba(166, 28, 108, 0.28);
+    }
+
+    /* Transition de page réelle */
+    .app-page {
+      display: none;
+      animation: pageFadeIn 0.28s ease-out;
+    }
+    .app-page.active {
+      display: block;
+    }
+    @keyframes pageFadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Logos 3D transparents rotatifs sans cercle (inwi / Dir Iddik) */
+    .coin-scene {
+      perspective: 1200px;
+      width: 210px;
+      height: 160px;
+      flex-shrink: 0;
+    }
+    @media (min-width: 640px) {
+      .coin-scene {
+        width: 270px;
+        height: 205px;
+      }
+    }
+    .coin-3d {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: coinSpin360 7s linear infinite;
+    }
+    .coin-scene:hover .coin-3d {
+      animation-play-state: paused;
+    }
+    @keyframes coinSpin360 {
+      0%   { transform: rotateY(0deg) rotateX(4deg); }
+      50%  { transform: rotateY(180deg) rotateX(-4deg); }
+      100% { transform: rotateY(360deg) rotateX(4deg); }
+    }
+    .coin-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+    }
+    .coin-face-front {
+      transform: translateZ(2px);
+    }
+    .coin-face-back {
+      transform: rotateY(180deg) translateZ(2px);
+    }
+    .coin-logo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter:
+        drop-shadow(0 0 10px rgba(255, 255, 255, 0.95))
+        drop-shadow(0 0 22px rgba(255, 255, 255, 0.65))
+        drop-shadow(0 10px 24px rgba(0, 0, 0, 0.35));
+      user-select: none;
+    }
+
+    /* Cartes 3D légères */
+    .card-3d {
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .card-3d:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 28px rgba(75, 22, 105, 0.10);
+    }
+  </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+  <!-- BARRE SUPÉRIEURE : PARTENAIRES, RÔLE & MODE BAS DÉBIT -->
+  <div class="bg-inwi-violet text-white text-xs py-2 px-4">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-2 h-2 rounded-full bg-pink-400"></span>
+        <span>Programme <strong>Classes Connectées · inwi</strong> avec le soutien de la <strong>Fondation Al Mada</strong></span>
+      </div>
+      <div class="flex items-center gap-2.5 flex-wrap">
+        <select id="roleSwitcher" onchange="switchRole(this.value)" class="bg-white/15 text-white border border-white/25 rounded-lg px-2.5 py-1 text-xs font-semibold focus:outline-none cursor-pointer">
+          <option value="benevole" class="text-gray-900">Profil : Bénévole</option>
+          <option value="association" class="text-gray-900">Profil : Association locale</option>
+          <option value="rse" class="text-gray-900">Profil : Direction RSE / Référent</option>
+        </select>
+        <button id="lowDataBtn" onclick="toggleLowDataMode()" class="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 border border-white/30 px-2.5 py-1 rounded-lg font-semibold transition cursor-pointer">
+          <span id="lowDataDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span id="lowDataText">Mode Bas Débit : OFF</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER & NAVIGATION 3D MULTI-PAGES -->
+  <header class="bg-white/95 backdrop-blur-md border-b border-purple-100 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20 gap-2">
+        <!-- Logo officiel Dir Iddik + Badge inwi -->
+        <button onclick="navigateTo('accueil')" class="flex items-center gap-2.5 group text-left cursor-pointer shrink-0">
+          <div class="flex items-center bg-white p-1 rounded-xl border border-purple-100">
+            <svg width="40" height="42" viewBox="0 0 120 125" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Logo Dir Iddik">
+              <path d="M36 33C34 21 37 11 42 11C47 11 49 21 47 33C46 38 38 38 36 33Z" fill="#A61C6C"/>
+              <path d="M52 30C53 16 58 6 63 7C68 8 69 19 65 32C63 37 52 36 52 30Z" fill="#A61C6C"/>
+              <path d="M69 34C73 20 80 12 85 14C90 16 88 27 81 39C78 44 67 40 69 34Z" fill="#A61C6C"/>
+              <path d="M83 45C90 34 99 28 103 32C107 36 102 46 92 54C87 58 80 50 83 45Z" fill="#A61C6C"/>
+              <path d="M88 64C99 58 110 57 112 62C114 67 105 74 93 77C87 78 83 67 88 64Z" fill="#A61C6C"/>
+              <path d="M51 44C42 36 27 39 24 52C20 68 31 85 35 91C37 94 42 94 47 93C56 91 74 85 80 72C85 61 78 49 67 48C60 47 55 51 53 53C53 50 53 46 51 44Z" fill="#A61C6C"/>
+              <path d="M32 56C30 65 32 76 36 83" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+              <path d="M40 71C40 75 41 79 43 82" stroke="white" stroke-width="3" stroke-linecap="round"/>
+              <text x="60" y="117" text-anchor="middle" fill="#A61C6C" font-family="Plus Jakarta Sans, Arial, sans-serif" font-weight="800" font-size="23" letter-spacing="-0.5">dir iddik</text>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="font-extrabold text-base text-inwi-violet tracking-tight">Classes Connectées</span>
+              <span class="bg-inwi-magenta text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">inwi</span>
+            </div>
+            <p class="text-[11px] text-gray-500 hidden sm:block">Plateforme collaborative de volontariat</p>
+          </div>
+        </button>
+
+        <!-- Navigation 3D Mauve sans numéros -->
+        <nav class="hidden lg:flex items-center gap-1.5" aria-label="Navigation principale">
+          <button onclick="navigateTo('accueil')" data-page="accueil" class="nav-3d active">Accueil</button>
+          <button onclick="navigateTo('missions')" data-page="missions" class="nav-3d">Missions</button>
+          <button onclick="navigateTo('inscription')" data-page="inscription" class="nav-3d">Inscription</button>
+          <button onclick="navigateTo('ecoles')" data-page="ecoles" class="nav-3d">Suivi Écoles</button>
+          <button onclick="navigateTo('communication')" data-page="communication" class="nav-3d">Kits & Formation</button>
+          <button onclick="navigateTo('impact')" data-page="impact" class="nav-3d">Impact & KPIs</button>
+        </nav>
+
+        <!-- Actions rapides & menu mobile -->
+        <div class="flex items-center gap-2 shrink-0">
+          <button onclick="openShareModal()" class="flex items-center gap-1.5 bg-purple-50 hover:bg-purple-100 text-inwi-violet border border-purple-200 text-xs font-bold px-3 py-2 rounded-xl transition cursor-pointer" title="Partager la plateforme">
+            <svg class="w-4 h-4 text-inwi-magenta" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+            </svg>
+            <span class="hidden sm:inline">Partager</span>
+          </button>
+          <button onclick="navigateTo('inscription')" class="bg-inwi-magenta hover:bg-inwi-magenta-dark text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition cursor-pointer">
+            Je m'engage
+          </button>
+          <button onclick="toggleMobileNav()" class="lg:hidden p-2 rounded-xl border border-purple-200 text-inwi-violet hover:bg-purple-50 cursor-pointer" aria-label="Menu">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Menu Mobile / Tablette 3D -->
+      <div id="mobileNav" class="hidden lg:hidden pb-4 pt-2 border-t border-purple-100 flex flex-wrap gap-2">
+        <button onclick="navigateTo('accueil')" data-page="accueil" class="nav-3d active text-xs">Accueil</button>
+        <button onclick="navigateTo('missions')" data-page="missions" class="nav-3d text-xs">Missions</button>
+        <button onclick="navigateTo('inscription')" data-page="inscription" class="nav-3d text-xs">Inscription</button>
+        <button onclick="navigateTo('ecoles')" data-page="ecoles" class="nav-3d text-xs">Suivi Écoles</button>
+        <button onclick="navigateTo('communication')" data-page="communication" class="nav-3d text-xs">Kits & Formation</button>
+        <button onclick="navigateTo('impact')" data-page="impact" class="nav-3d text-xs">Impact & KPIs</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENEUR DES PAGES -->
+  <div class="flex-1">
+
+    <!-- ==================== PAGE 1 : ACCUEIL ==================== -->
+    <div id="page-accueil" class="app-page active">
+      <section class="hero-gradient text-white relative overflow-hidden">
+        <div class="decorative-blur absolute -top-24 -right-24 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 relative z-10">
+          <div class="grid lg:grid-cols-12 gap-10 items-center">
+            <div class="lg:col-span-7 space-y-6">
+              <div class="flex flex-col sm:flex-row items-center gap-6">
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight flex-1">
+                  Connectons ensemble les écoles rurales du Maroc avec <span class="text-pink-200 underline decoration-pink-400/60">Dir Iddik</span>
+                </h1>
+                <div class="coin-scene" aria-label="Logos 3D rotatifs inwi et Dir Iddik">
+                  <div class="coin-3d">
+                    <div class="coin-face coin-face-front">
+                      <img src="data:image/png;base64,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" alt="Logo inwi" class="coin-logo-img" />
+                    </div>
+                    <div class="coin-face coin-face-back">
+                      <img src="data:image/png;base64,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" alt="Logo Dir Iddik" class="coin-logo-img" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p class="text-purple-100 text-base sm:text-lg max-w-2xl leading-relaxed">
+                Plateforme opérationnelle pour mobiliser les bénévoles, affecter les missions dans les 12 régions, suivre l'équipement des Classes Connectées en temps réel et piloter l'impact RSE.
+              </p>
+              <div class="flex flex-wrap gap-3 pt-1">
+                <button onclick="navigateTo('ecoles')" class="bg-white text-inwi-violet hover:bg-pink-50 font-bold px-6 py-3.5 rounded-xl shadow-md transition cursor-pointer">
+                  Explorer les 40 écoles
+                </button>
+                <button onclick="navigateTo('missions')" class="bg-inwi-magenta border border-pink-300/40 hover:bg-inwi-magenta-dark text-white font-bold px-6 py-3.5 rounded-xl transition cursor-pointer">
+                  Trouver une mission terrain
+                </button>
+              </div>
+            </div>
+
+            <!-- Carte Chiffres Clés Temps Réel -->
+            <div class="lg:col-span-5">
+              <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 space-y-5">
+                <div class="flex items-center justify-between border-b border-white/15 pb-3">
+                  <span class="text-xs font-bold uppercase tracking-wider text-pink-200">Impact Dir Iddik · Classes Connectées</span>
+                  <span class="text-xs bg-emerald-400/20 text-emerald-200 px-2.5 py-0.5 rounded-full font-semibold">Cycle 2026</span>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                  <div class="bg-white/10 rounded-xl p-4">
+                    <div class="text-3xl font-extrabold">110+</div>
+                    <div class="text-xs text-purple-100 mt-1">Écoles équipées depuis 2021</div>
+                  </div>
+                  <div class="bg-white/10 rounded-xl p-4">
+                    <div class="text-3xl font-extrabold text-pink-200">34 000+</div>
+                    <div class="text-xs text-purple-100 mt-1">Élèves bénéficiaires</div>
+                  </div>
+                  <div class="bg-white/10 rounded-xl p-4">
+                    <div class="text-3xl font-extrabold" id="heroTotalSchools">40</div>
+                    <div class="text-xs text-purple-100 mt-1">Écoles suivies en 2026</div>
+                  </div>
+                  <div class="bg-white/10 rounded-xl p-4">
+                    <div class="text-3xl font-extrabold text-teal-200">12</div>
+                    <div class="text-xs text-purple-100 mt-1">Régions du Royaume</div>
+                  </div>
+                </div>
+                <div class="bg-white/10 rounded-xl p-3.5 flex items-center justify-between text-xs">
+                  <span>Bénévoles inscrits sur la plateforme :</span>
+                  <span id="liveVolunteerCount" class="font-extrabold text-base text-pink-200">148 bénévoles</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Accès rapide + permissions du rôle actif -->
+      <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white border border-purple-100 rounded-2xl p-5 shadow-sm">
+          <div>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-inwi-magenta">Droits & Permissions actifs</span>
+            <h2 id="activeRoleBanner" class="text-lg font-extrabold text-inwi-violet mt-0.5">Profil : Bénévole</h2>
+            <p id="activeRoleDesc" class="text-xs text-gray-600 mt-0.5"></p>
+          </div>
+          <div id="activeRoleBadges" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <button onclick="navigateTo('missions')" class="card-3d text-left bg-white rounded-2xl border border-purple-100 p-6 space-y-3 cursor-pointer hover:border-inwi-magenta">
+            <div class="flex items-center justify-between">
+              <span class="w-10 h-10 rounded-xl bg-pink-100 text-inwi-magenta flex items-center justify-center font-extrabold text-lg">📍</span>
+              <span id="homeMissionsBadge" class="text-xs font-bold bg-purple-100 text-inwi-violet px-2.5 py-1 rounded-full">12 missions ouvertes</span>
+            </div>
+            <h3 class="text-lg font-extrabold text-inwi-violet">Missions Terrain</h3>
+            <p class="text-xs text-gray-600 leading-relaxed">Filtrez par région et compétence pour rejoindre l'installation d'une salle multimédia ou animer un atelier.</p>
+            <div class="text-xs font-bold text-inwi-magenta pt-1">Ouvrir l'espace Missions &rarr;</div>
+          </button>
+
+          <button onclick="navigateTo('ecoles')" class="card-3d text-left bg-white rounded-2xl border border-purple-100 p-6 space-y-3 cursor-pointer hover:border-inwi-magenta">
+            <div class="flex items-center justify-between">
+              <span class="w-10 h-10 rounded-xl bg-teal-100 text-inwi-teal flex items-center justify-center font-extrabold text-lg">🏫</span>
+              <span id="homeOperationalBadge" class="text-xs font-bold bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full">10 / 40 opérationnelles</span>
+            </div>
+            <h3 class="text-lg font-extrabold text-inwi-violet">Suivi des 40 Écoles</h3>
+            <p class="text-xs text-gray-600 leading-relaxed">Consultez l'avancement des 40 écoles primaires rurales réparties sur les 12 régions du Maroc.</p>
+            <div class="text-xs font-bold text-inwi-magenta pt-1">Ouvrir le suivi des écoles &rarr;</div>
+          </button>
+
+          <button onclick="navigateTo('inscription')" class="card-3d text-left bg-white rounded-2xl border border-purple-100 p-6 space-y-3 cursor-pointer hover:border-inwi-magenta">
+            <div class="flex items-center justify-between">
+              <span class="w-10 h-10 rounded-xl bg-purple-100 text-inwi-violet flex items-center justify-center font-extrabold text-lg">🪪</span>
+              <span class="text-xs font-bold bg-pink-100 text-inwi-magenta px-2.5 py-1 rounded-full">Attestation PDF</span>
+            </div>
+            <h3 class="text-lg font-extrabold text-inwi-violet">Inscription & Passeport</h3>
+            <p class="text-xs text-gray-600 leading-relaxed">Créez votre profil bénévole unique, obtenez vos badges et téléchargez votre attestation en PDF.</p>
+            <div class="text-xs font-bold text-inwi-magenta pt-1">Gérer mon profil &rarr;</div>
+          </button>
+
+          <button onclick="navigateTo('communication')" class="card-3d text-left bg-white rounded-2xl border border-purple-100 p-6 space-y-3 cursor-pointer hover:border-inwi-magenta">
+            <div class="flex items-center justify-between">
+              <span class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-extrabold text-lg">🧰</span>
+              <span class="text-xs font-bold bg-teal-100 text-inwi-teal px-2.5 py-1 rounded-full">Hors-ligne & WhatsApp</span>
+            </div>
+            <h3 class="text-lg font-extrabold text-inwi-violet">Kits & Formation</h3>
+            <p class="text-xs text-gray-600 leading-relaxed">Consultez les check-lists techniques interactives, scénarios d'ateliers et annuaire des référents régionaux.</p>
+            <div class="text-xs font-bold text-inwi-magenta pt-1">Accéder aux kits &rarr;</div>
+          </button>
+
+          <button onclick="navigateTo('impact')" class="card-3d text-left bg-white rounded-2xl border border-purple-100 p-6 space-y-3 cursor-pointer hover:border-inwi-magenta md:col-span-2 lg:col-span-2">
+            <div class="flex items-center justify-between">
+              <span class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-extrabold text-lg">📊</span>
+              <span class="text-xs font-bold bg-purple-100 text-inwi-violet px-2.5 py-1 rounded-full">Pilotage 12 Régions</span>
+            </div>
+            <h3 class="text-lg font-extrabold text-inwi-violet">Tableau de Bord Impact & KPIs RSE</h3>
+            <p class="text-xs text-gray-600 leading-relaxed">Visualisez en direct le taux d'avancement des 40 écoles par région, les indicateurs d'adoption, de formation et de satisfaction terrain.</p>
+            <div class="text-xs font-bold text-inwi-magenta pt-1">Voir le tableau de bord complet &rarr;</div>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <!-- ==================== PAGE 2 : MISSIONS ==================== -->
+    <div id="page-missions" class="app-page">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-purple-100 pb-6">
+          <div>
+            <button onclick="navigateTo('accueil')" class="text-xs font-bold text-inwi-magenta hover:underline mb-2 inline-block cursor-pointer">&larr; Retour à l'accueil</button>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-inwi-violet">Missions Terrain · Cycle 2026</h1>
+            <p class="text-gray-600 text-sm mt-1">Rejoignez une équipe près de chez vous pour équiper une salle multimédia ou animer un atelier numérique.</p>
+          </div>
+          <div class="flex flex-wrap gap-2.5 items-center">
+            <button id="btnNewMission" onclick="openModal('newMissionModal')" class="hidden bg-inwi-magenta hover:bg-inwi-magenta-dark text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm cursor-pointer">
+              + Publier une mission
+            </button>
+            <input id="searchMission" type="text" oninput="renderMissions()" placeholder="Rechercher école, ville, assoc..." class="bg-white border border-purple-200 rounded-xl px-3.5 py-2 text-sm text-gray-700 focus:outline-none focus:border-inwi-magenta" />
+            <select id="filterRegion" onchange="renderMissions()" class="bg-white border border-purple-200 rounded-xl px-3.5 py-2 text-sm font-medium text-gray-700 focus:outline-none focus:border-inwi-magenta">
+              <option value="all">Toutes les régions (12)</option>
+            </select>
+            <select id="filterType" onchange="renderMissions()" class="bg-white border border-purple-200 rounded-xl px-3.5 py-2 text-sm font-medium text-gray-700 focus:outline-none focus:border-inwi-magenta">
+              <option value="all">Tous types de missions</option>
+              <option value="Installation matériel">Installation matériel</option>
+              <option value="Atelier pédagogique">Atelier pédagogique</option>
+              <option value="Suivi & Maintenance">Suivi & Maintenance</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="missionsPermissionBar" class="text-xs font-semibold px-4 py-3 rounded-xl border"></div>
+        <div id="missionsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </div>
+    </div>
+
+    <!-- ==================== PAGE 3 : INSCRIPTION & PASSEPORT ==================== -->
+    <div id="page-inscription" class="app-page">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+        <div>
+          <button onclick="navigateTo('accueil')" class="text-xs font-bold text-inwi-magenta hover:underline mb-2 inline-block cursor-pointer">&larr; Retour à l'accueil</button>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-inwi-violet">Inscription & Passeport Bénévole</h1>
+          <p class="text-gray-600 text-sm mt-1">Centralisez votre profil pour être affecté rapidement dans votre région et télécharger votre attestation officielle en PDF.</p>
+        </div>
+
+        <div class="bg-white rounded-3xl border border-purple-100 p-6 sm:p-10 shadow-sm">
+          <div class="grid lg:grid-cols-12 gap-10 items-start">
+            <div class="lg:col-span-7 space-y-5">
+              <h2 class="text-lg font-extrabold text-inwi-violet">Fiche d'engagement volontaire</h2>
+              <form id="volunteerForm" onsubmit="handleVolunteerRegister(event)" class="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-gray-700 mb-1">Nom & Prénom *</label>
+                  <input type="text" id="volName" required placeholder="Ex : Mouad MTIBO" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-inwi-magenta" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-gray-700 mb-1">Téléphone WhatsApp *</label>
+                  <input type="tel" id="volPhone" required placeholder="Ex : 06 61 00 00 00" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-inwi-magenta" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-gray-700 mb-1">CIN / N° Pièce d'identité *</label>
+                  <input type="text" id="volCin" required placeholder="Ex : AB123456" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm uppercase focus:outline-none focus:border-inwi-magenta" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-gray-700 mb-1">Catégorie d'acteur *</label>
+                  <select id="volRole" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-inwi-magenta">
+                    <option value="Bénévole externe / Étudiant">Bénévole externe / Étudiant</option>
+                    <option value="Collaborateur inwi">Collaborateur inwi</option>
+                    <option value="Association locale partenaire">Association locale partenaire</option>
+                    <option value="Enseignant / Directeur d'école">Enseignant / Directeur d'école</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-gray-700 mb-1">Région de rattachement *</label>
+                  <select id="volRegion" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-inwi-magenta"></select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-gray-700 mb-1">Compétence principale</label>
+                  <select id="volSkill" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-inwi-magenta">
+                    <option value="Installation salle multimédia & réseau">Installation salle multimédia & réseau</option>
+                    <option value="Animation d'ateliers pédagogiques">Animation d'ateliers pédagogiques</option>
+                    <option value="Coordination terrain & logistique">Coordination terrain & logistique</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-gray-700 mb-1">Disponibilité</label>
+                  <select id="volAvail" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-inwi-magenta">
+                    <option value="Week-ends">Week-ends</option>
+                    <option value="Vacances scolaires">Vacances scolaires</option>
+                    <option value="Mercredi après-midi">Mercredi après-midi</option>
+                    <option value="Flexible selon calendrier">Flexible selon calendrier</option>
+                  </select>
+                </div>
+                <div class="sm:col-span-2 pt-2">
+                  <button type="submit" class="w-full bg-inwi-magenta hover:bg-inwi-magenta-dark text-white font-bold py-3.5 rounded-xl shadow-sm transition cursor-pointer">
+                    Valider mon inscription & activer mon passeport bénévole
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Passeport Bénévole -->
+            <div class="lg:col-span-5 bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200 rounded-2xl p-6 space-y-5">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-inwi-violet">Passeport & Valorisation</span>
+                <span class="bg-inwi-teal text-white text-xs font-bold px-2.5 py-1 rounded-full">Membre Dir Iddik</span>
+              </div>
+
+              <div id="volunteerCard" class="bg-white rounded-xl p-5 border border-purple-100 space-y-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-full bg-inwi-magenta text-white font-extrabold flex items-center justify-center text-lg" id="cardAvatar">DI</div>
+                  <div>
+                    <h3 class="font-bold text-inwi-violet" id="cardName">Visiteur Dir Iddik</h3>
+                    <p class="text-xs text-gray-500" id="cardMeta">Complétez le formulaire pour générer votre badge</p>
+                    <p class="text-[11px] font-semibold text-inwi-magenta hidden" id="cardCin"></p>
+                  </div>
+                </div>
+                <div class="border-t border-gray-100 pt-3 flex flex-wrap gap-2" id="cardBadges">
+                  <span class="text-xs bg-purple-100 text-inwi-violet font-semibold px-2.5 py-1 rounded-lg">🌱 Nouveau Membre</span>
+                  <span class="text-xs bg-pink-100 text-inwi-magenta font-semibold px-2.5 py-1 rounded-lg">🤝 Citoyen Engagé</span>
+                </div>
+                <div class="text-xs text-gray-600 bg-gray-50 p-3 rounded-lg space-y-1">
+                  <div><strong>Missions rejointes :</strong> <span id="myMissionsCount">0 mission</span></div>
+                  <div id="myMissionsList" class="text-[11px] text-inwi-violet font-medium"></div>
+                </div>
+              </div>
+
+              <button id="btnDownloadPassport" onclick="downloadPassportPDF()" class="hidden w-full bg-inwi-magenta hover:bg-inwi-magenta-dark text-white text-xs font-bold py-3.5 px-4 rounded-xl shadow-sm transition cursor-pointer">
+                🪪 Télécharger mon Passeport Bénévole (PDF)
+              </button>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <button onclick="openAttestationModal()" class="bg-white border border-purple-200 hover:border-inwi-magenta text-inwi-violet text-xs font-bold py-3 px-3 rounded-xl transition cursor-pointer">
+                  👁️ Aperçu attestation
+                </button>
+                <button onclick="downloadAttestationPDF()" class="bg-inwi-violet hover:bg-inwi-magenta text-white text-xs font-bold py-3 px-3 rounded-xl transition cursor-pointer">
+                  ⬇ Attestation PDF
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== PAGE 4 : SUIVI DES 40 ÉCOLES ==================== -->
+    <div id="page-ecoles" class="app-page">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
+        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 border-b border-purple-100 pb-6">
+          <div>
+            <button onclick="navigateTo('accueil')" class="text-xs font-bold text-inwi-magenta hover:underline mb-2 inline-block cursor-pointer">&larr; Retour à l'accueil</button>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-inwi-violet">Suivi des 40 Classes Connectées · 12 Régions</h1>
+            <p class="text-gray-600 text-sm mt-1">Suivi complet de l'équipement des salles multimédias, de la connectivité 4G/VSAT et des ateliers élèves.</p>
+          </div>
+          <div class="flex flex-wrap gap-2.5 items-center">
+            <button id="btnExportCSV" onclick="exportSchoolsCSV()" class="bg-white border border-purple-200 hover:border-inwi-magenta text-inwi-violet text-xs font-bold px-3.5 py-2.5 rounded-xl transition cursor-pointer">
+              ⬇ Exporter CSV (40 écoles)
+            </button>
+          </div>
+        </div>
+
+        <div id="schoolsPermissionBar" class="text-xs font-semibold px-4 py-3 rounded-xl border"></div>
+
+        <!-- Compteurs rapides des 40 écoles -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="schoolsSummaryCards"></div>
+
+        <!-- Filtres Écoles -->
+        <div class="bg-white rounded-2xl border border-purple-100 p-4 flex flex-wrap gap-3 items-center justify-between">
+          <div class="flex flex-wrap gap-2.5 flex-1">
+            <input id="searchSchool" type="text" oninput="renderSchools()" placeholder="Rechercher école, commune, province ou association..." class="flex-1 min-w-[220px] bg-purple-50/40 border border-purple-200 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-inwi-magenta" />
+            <select id="filterSchoolRegion" onchange="renderSchools()" class="bg-white border border-purple-200 rounded-xl px-3.5 py-2 text-sm font-medium text-gray-700 focus:outline-none focus:border-inwi-magenta">
+              <option value="all">Toutes les régions (12)</option>
+            </select>
+            <select id="filterSchoolStatus" onchange="renderSchools()" class="bg-white border border-purple-200 rounded-xl px-3.5 py-2 text-sm font-medium text-gray-700 focus:outline-none focus:border-inwi-magenta">
+              <option value="all">Tous les statuts</option>
+              <option value="Opérationnelle">Opérationnelle (100%)</option>
+              <option value="Ateliers en cours">Ateliers en cours (75%)</option>
+              <option value="Installation matériel">Installation matériel (50%)</option>
+              <option value="Planifiée 2026">Planifiée 2026 (25%)</option>
+            </select>
+          </div>
+          <span id="schoolsVisibleCount" class="text-xs font-bold text-inwi-violet">40 / 40 écoles affichées</span>
+        </div>
+
+        <!-- Tableau des 40 écoles -->
+        <div class="bg-white rounded-2xl border border-purple-100 overflow-hidden shadow-sm">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-inwi-violet text-white text-xs uppercase tracking-wider">
+                  <th class="py-3.5 px-4">École & Commune</th>
+                  <th class="py-3.5 px-4">Région</th>
+                  <th class="py-3.5 px-4">Association Relais</th>
+                  <th class="py-3.5 px-4">Élèves</th>
+                  <th class="py-3.5 px-4">Avancement Salle</th>
+                  <th class="py-3.5 px-4">Statut</th>
+                  <th class="py-3.5 px-4 text-right">Actions terrain</th>
+                </tr>
+              </thead>
+              <tbody id="schoolsTableBody" class="divide-y divide-gray-100 text-sm"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== PAGE 5 : KITS & FORMATION ==================== -->
+    <div id="page-communication" class="app-page">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+        <div>
+          <button onclick="navigateTo('accueil')" class="text-xs font-bold text-inwi-magenta hover:underline mb-2 inline-block cursor-pointer">&larr; Retour à l'accueil</button>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-inwi-violet">Kits Pratiques, Formation & Support Terrain</h1>
+          <p class="text-gray-600 text-sm mt-1">Guides interactifs optimisés pour une consultation rapide en zone rurale et contacts directs des coordinateurs.</p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="bg-white border border-purple-100 rounded-2xl p-6 hover:border-inwi-magenta transition flex flex-col justify-between space-y-4 shadow-sm">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold bg-pink-100 text-inwi-magenta px-2.5 py-0.5 rounded-full">Tutoriel 3 min</span>
+                <span class="text-xs text-gray-400">Hors-ligne</span>
+              </div>
+              <h3 class="font-bold text-inwi-violet text-base">Prise en main de la plateforme</h3>
+              <p class="text-xs text-gray-600 leading-relaxed">Guide pas-à-pas : inscription, choix d'une mission et validation de présence terrain.</p>
+            </div>
+            <button onclick="openKitModal('guide')" class="text-left text-xs font-bold text-inwi-magenta hover:underline cursor-pointer">
+              Ouvrir le guide interactif &rarr;
+            </button>
+          </div>
+
+          <div class="bg-white border border-purple-100 rounded-2xl p-6 hover:border-inwi-magenta transition flex flex-col justify-between space-y-4 shadow-sm">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold bg-teal-100 text-inwi-teal px-2.5 py-0.5 rounded-full">Kit Technique</span>
+                <span class="text-xs text-gray-400">Check-list</span>
+              </div>
+              <h3 class="font-bold text-inwi-violet text-base">Installation salle multimédia</h3>
+              <p class="text-xs text-gray-600 leading-relaxed">Procédure d'installation des postes PC, routeur 4G/VSAT inwi, vidéoprojecteur et logiciels.</p>
+            </div>
+            <button onclick="openKitModal('tech')" class="text-left text-xs font-bold text-inwi-magenta hover:underline cursor-pointer">
+              Ouvrir la check-list technique &rarr;
+            </button>
+          </div>
+
+          <div class="bg-white border border-purple-100 rounded-2xl p-6 hover:border-inwi-magenta transition flex flex-col justify-between space-y-4 shadow-sm">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold bg-purple-100 text-inwi-violet px-2.5 py-0.5 rounded-full">Pédagogie</span>
+                <span class="text-xs text-gray-400">Atelier 2h</span>
+              </div>
+              <h3 class="font-bold text-inwi-violet text-base">Animer un atelier numérique</h3>
+              <p class="text-xs text-gray-600 leading-relaxed">Séquences ludiques d'initiation à l'informatique, Scratch et sécurité internet pour le primaire.</p>
+            </div>
+            <button onclick="openKitModal('pedago')" class="text-left text-xs font-bold text-inwi-magenta hover:underline cursor-pointer">
+              Voir le scénario d'atelier &rarr;
+            </button>
+          </div>
+
+          <div class="border border-emerald-200 rounded-2xl p-6 bg-emerald-50/70 flex flex-col justify-between space-y-4 shadow-sm">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full">Assistance directe</span>
+                <span class="text-xs text-emerald-700 font-semibold">En ligne</span>
+              </div>
+              <h3 class="font-bold text-inwi-violet text-base">Support Référents & SI</h3>
+              <p class="text-xs text-gray-600 leading-relaxed">Un blocage réseau ou matériel sur le terrain ? Contactez directement la cellule d'astreinte inwi.</p>
+            </div>
+            <a href="https://wa.me/212600000000?text=Bonjour%20R%C3%A9f%C3%A9rent%20Dir%20Iddik%2C%20j'ai%20besoin%20d'assistance%20sur%20une%20Classe%20Connect%C3%A9e." target="_blank" class="inline-block text-xs font-bold text-emerald-700 hover:underline">
+              Contacter le support WhatsApp &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- Annuaire des référents régionaux -->
+        <div class="bg-white rounded-3xl border border-purple-100 p-6 sm:p-8 shadow-sm space-y-4">
+          <h2 class="text-lg font-extrabold text-inwi-violet">Coordination Régionale · Les 12 Zones du Royaume</h2>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs" id="referentsGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== PAGE 6 : IMPACT & KPIs ==================== -->
+    <div id="page-impact" class="app-page">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+        <div>
+          <button onclick="navigateTo('accueil')" class="text-xs font-bold text-inwi-magenta hover:underline mb-2 inline-block cursor-pointer">&larr; Retour à l'accueil</button>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-inwi-violet">Tableau de Bord Impact & Indicateurs RSE</h1>
+          <p class="text-gray-600 text-sm mt-1">Calculé en temps réel sur l'ensemble des 40 écoles du cycle 2026 et des engagements bénévoles.</p>
+        </div>
+
+        <!-- Panneau exclusif Direction RSE -->
+        <div id="rseAdminPanel" class="hidden bg-gradient-to-r from-purple-900 to-pink-800 text-white rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-md">
+          <div>
+            <span class="text-[11px] font-extrabold uppercase tracking-wider text-pink-200">Espace Direction RSE / Référent</span>
+            <h2 class="text-lg font-extrabold">Pilotage & Validation Nationale</h2>
+            <p class="text-xs text-purple-100">Exportez le rapport complet des 40 écoles ou réinitialisez les données de démonstration.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="exportSchoolsCSV()" class="bg-white text-inwi-violet font-bold text-xs px-4 py-2.5 rounded-xl cursor-pointer">⬇ Export Rapport CSV</button>
+            <button onclick="resetDemoData()" class="bg-white/15 hover:bg-white/25 border border-white/30 text-white font-bold text-xs px-4 py-2.5 rounded-xl cursor-pointer">↺ Réinitialiser démo</button>
+          </div>
+        </div>
+
+        <!-- 4 KPIs Quantitatifs -->
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="bg-white border border-purple-100 rounded-2xl p-5 space-y-2 shadow-sm">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold text-gray-500 uppercase">Taux d'adoption</span>
+              <span class="text-xs font-bold text-inwi-violet bg-purple-100 px-2 py-0.5 rounded">Cible : 80 %</span>
+            </div>
+            <div id="kpiAdoptionVal" class="text-3xl font-extrabold text-inwi-violet">74 %</div>
+            <div class="w-full bg-purple-200 h-2 rounded-full overflow-hidden">
+              <div id="kpiAdoptionBar" class="bg-inwi-violet h-full rounded-full" style="width: 74%"></div>
+            </div>
+            <p class="text-xs text-gray-500">Bénévoles inscrits / total mobilisés</p>
+          </div>
+
+          <div class="bg-white border border-teal-100 rounded-2xl p-5 space-y-2 shadow-sm">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold text-gray-500 uppercase">Avancement moyen</span>
+              <span class="text-xs font-bold text-inwi-teal bg-teal-100 px-2 py-0.5 rounded">40 écoles</span>
+            </div>
+            <div id="kpiAvgProgressVal" class="text-3xl font-extrabold text-inwi-teal">64 %</div>
+            <div class="w-full bg-teal-200 h-2 rounded-full overflow-hidden">
+              <div id="kpiAvgProgressBar" class="bg-inwi-teal h-full rounded-full" style="width: 64%"></div>
+            </div>
+            <p class="text-xs text-gray-500">Progression globale des 40 classes</p>
+          </div>
+
+          <div class="bg-white border border-pink-100 rounded-2xl p-5 space-y-2 shadow-sm">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold text-gray-500 uppercase">Satisfaction</span>
+              <span class="text-xs font-bold text-inwi-magenta bg-pink-100 px-2 py-0.5 rounded">Cible : 4 / 5</span>
+            </div>
+            <div id="kpiSatVal" class="text-3xl font-extrabold text-inwi-magenta">4.3 / 5</div>
+            <div class="w-full bg-pink-200 h-2 rounded-full overflow-hidden">
+              <div id="kpiSatBar" class="bg-inwi-magenta h-full rounded-full" style="width: 86%"></div>
+            </div>
+            <p class="text-xs text-gray-500">Note moyenne des utilisateurs</p>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-2xl p-5 space-y-2 shadow-sm">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold text-gray-500 uppercase">Élèves impactés (2026)</span>
+              <span class="text-xs font-bold text-gray-700 bg-gray-200 px-2 py-0.5 rounded">12 régions</span>
+            </div>
+            <div id="kpiStudentsVal" class="text-3xl font-extrabold text-gray-800">9 450</div>
+            <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+              <div class="bg-gray-800 h-full rounded-full" style="width: 91%"></div>
+            </div>
+            <p class="text-xs text-gray-500">Élèves des 40 nouvelles écoles</p>
+          </div>
+        </div>
+
+        <!-- Répartition par région (12 régions) -->
+        <div class="bg-white rounded-3xl border border-purple-100 p-6 sm:p-8 shadow-sm space-y-5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h2 class="text-lg font-extrabold text-inwi-violet">Déploiement des 40 Classes Connectées par Région</h2>
+              <p class="text-xs text-gray-500">Avancement moyen calculé en direct à partir des fiches écoles</p>
+            </div>
+            <button onclick="navigateTo('ecoles')" class="text-xs font-bold text-inwi-magenta hover:underline cursor-pointer">Voir les 40 écoles &rarr;</button>
+          </div>
+          <div id="regionalBreakdown" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </div>
+
+        <!-- Mini Sondage Feedback Terrain -->
+        <div class="bg-purple-50/70 border border-purple-100 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div>
+            <h3 class="font-bold text-inwi-violet text-sm">Votre avis compte pour améliorer la plateforme</h3>
+            <p class="text-xs text-gray-600">Évaluez la simplicité de cet outil pour vos missions Dir Iddik :</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="ratePlatform(3)" class="px-3.5 py-2 bg-white border border-purple-200 rounded-xl text-xs font-bold hover:border-inwi-magenta cursor-pointer">3/5 Correct</button>
+            <button onclick="ratePlatform(4)" class="px-3.5 py-2 bg-white border border-purple-200 rounded-xl text-xs font-bold hover:border-inwi-magenta cursor-pointer">4/5 Très utile</button>
+            <button onclick="ratePlatform(5)" class="px-3.5 py-2 bg-inwi-magenta text-white rounded-xl text-xs font-bold hover:bg-inwi-magenta-dark cursor-pointer">5/5 Excellent</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-inwi-violet text-purple-200 py-8 px-4 mt-12">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-xs">
+      <div class="space-y-1 text-center md:text-left">
+        <div class="text-white font-extrabold text-base">Dir Iddik · Classes Connectées (inwi)</div>
+        <p>Ensemble pour l'inclusion numérique des écoles primaires rurales du Royaume</p>
+      </div>
+      <div class="text-center md:text-right space-y-1">
+        <p>Partenaires : Fondation Al Mada · Managem · Nareva · Ministère de l'Éducation Nationale</p>
+        <p class="text-pink-300">diriddik.ma · Programme de volontariat citoyen</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODALE NOUVELLE MISSION (Association / Direction RSE) -->
+  <div id="newMissionModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border border-purple-100 max-w-md w-full p-6 shadow-xl space-y-4">
+      <div class="flex items-start justify-between">
+        <div>
+          <span class="text-xs font-extrabold uppercase tracking-wider text-inwi-magenta">Action Association / RSE</span>
+          <h3 class="text-lg font-extrabold text-inwi-violet">Publier une nouvelle mission</h3>
+        </div>
+        <button onclick="closeModal('newMissionModal')" class="text-gray-400 hover:text-gray-700 text-xl font-bold leading-none cursor-pointer">&times;</button>
+      </div>
+      <form onsubmit="handleCreateMission(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="font-bold text-gray-700 block mb-1">Titre de la mission *</label>
+          <input id="nmTitle" required placeholder="Ex : Atelier Code · École Oulmès" class="w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:border-inwi-magenta" />
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-bold text-gray-700 block mb-1">Région *</label>
+            <select id="nmRegion" class="w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:border-inwi-magenta"></select>
+          </div>
+          <div>
+            <label class="font-bold text-gray-700 block mb-1">Ville / Province *</label>
+            <input id="nmCity" required placeholder="Ex : Khémisset" class="w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:border-inwi-magenta" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-bold text-gray-700 block mb-1">Type *</label>
+            <select id="nmType" class="w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:border-inwi-magenta">
+              <option value="Installation matériel">Installation matériel</option>
+              <option value="Atelier pédagogique">Atelier pédagogique</option>
+              <option value="Suivi & Maintenance">Suivi & Maintenance</option>
+            </select>
+          </div>
+          <div>
+            <label class="font-bold text-gray-700 block mb-1">Places *</label>
+            <input id="nmSpots" type="number" min="2" max="30" value="6" class="w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:border-inwi-magenta" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-bold text-gray-700 block mb-1">Date *</label>
+            <input id="nmDate" required placeholder="Ex : 30 Janv. 2027" class="w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:border-inwi-magenta" />
+          </div>
+          <div>
+            <label class="font-bold text-gray-700 block mb-1">Association relais *</label>
+            <input id="nmAssoc" required placeholder="Ex : Zemmour Avenir" class="w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:border-inwi-magenta" />
+          </div>
+        </div>
+        <button type="submit" class="w-full bg-inwi-magenta text-white font-bold py-3 rounded-xl cursor-pointer">Publier sur la plateforme</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODALE DÉTAIL ÉCOLE -->
+  <div id="schoolModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border border-purple-100 max-w-lg w-full p-6 sm:p-7 shadow-xl space-y-5">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <span id="smRegion" class="text-xs font-extrabold uppercase tracking-wider text-inwi-magenta"></span>
+          <h3 id="smTitle" class="text-xl font-extrabold text-inwi-violet mt-0.5"></h3>
+          <p id="smMeta" class="text-xs text-gray-500 mt-0.5"></p>
+        </div>
+        <button onclick="closeModal('schoolModal')" class="text-gray-400 hover:text-gray-700 p-1 text-xl font-bold leading-none cursor-pointer">&times;</button>
+      </div>
+      <div id="smBody" class="space-y-4 text-xs"></div>
+    </div>
+  </div>
+
+  <!-- MODALE KIT / GUIDE INTERACTIF -->
+  <div id="kitModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border border-purple-100 max-w-lg w-full p-6 sm:p-7 shadow-xl space-y-4">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <span id="kmTag" class="text-xs font-extrabold uppercase tracking-wider text-inwi-magenta"></span>
+          <h3 id="kmTitle" class="text-xl font-extrabold text-inwi-violet mt-0.5"></h3>
+        </div>
+        <button onclick="closeModal('kitModal')" class="text-gray-400 hover:text-gray-700 p-1 text-xl font-bold leading-none cursor-pointer">&times;</button>
+      </div>
+      <div id="kmBody" class="text-xs text-gray-700 space-y-3 leading-relaxed max-h-[60vh] overflow-y-auto pr-1"></div>
+      <button onclick="closeModal('kitModal')" class="w-full bg-inwi-violet text-white font-bold text-xs py-3 rounded-xl cursor-pointer">Fermer le guide</button>
+    </div>
+  </div>
+
+  <!-- MODALE ATTESTATION BÉNÉVOLE -->
+  <div id="attestationModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border-2 border-inwi-magenta max-w-lg w-full p-7 shadow-2xl space-y-5 text-center">
+      <div class="text-xs font-extrabold uppercase tracking-widest text-inwi-magenta">Programme Dir Iddik · inwi</div>
+      <h3 class="text-2xl font-extrabold text-inwi-violet">Attestation d'Engagement Citoyen</h3>
+      <div class="bg-purple-50/70 border border-purple-100 rounded-2xl p-5 space-y-2 text-xs text-gray-700">
+        <p>La Direction RSE d'<strong>inwi</strong> et le programme <strong>Dir Iddik</strong> certifient que :</p>
+        <p id="attName" class="text-lg font-extrabold text-inwi-violet py-1"></p>
+        <p id="attDetails"></p>
+        <p id="attDate" class="text-[11px] text-gray-500 pt-2"></p>
+      </div>
+      <div class="flex gap-3">
+        <button onclick="downloadAttestationPDF()" class="flex-1 bg-inwi-magenta hover:bg-inwi-magenta-dark text-white font-bold text-xs py-3 rounded-xl cursor-pointer">⬇ Télécharger PDF</button>
+        <button onclick="closeModal('attestationModal')" class="flex-1 bg-gray-100 text-gray-700 font-bold text-xs py-3 rounded-xl cursor-pointer">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALE DE PARTAGE DE LA PLATEFORME -->
+  <div id="shareModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border border-purple-100 max-w-md w-full p-6 sm:p-7 shadow-xl space-y-5">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <span class="text-xs font-extrabold uppercase tracking-wider text-inwi-magenta">Diffusion & Mobilisation</span>
+          <h3 class="text-xl font-extrabold text-inwi-violet mt-0.5">Partager la plateforme</h3>
+        </div>
+        <button onclick="closeModal('shareModal')" class="text-gray-400 hover:text-gray-700 p-1 rounded-lg text-lg font-bold leading-none cursor-pointer">&times;</button>
+      </div>
+      <p class="text-xs text-gray-600 leading-relaxed">
+        Copiez le lien de la plateforme ou partagez-le directement sur WhatsApp avec les bénévoles, associations relais et référents régionaux.
+      </p>
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <label for="shareUrlInput" class="text-xs font-bold text-gray-700">Lien d'accès à la plateforme :</label>
+          <span id="shareUrlStatus" class="text-[11px] font-semibold text-inwi-teal"></span>
+        </div>
+        <div class="flex gap-2">
+          <input id="shareUrlInput" type="text" readonly class="w-full bg-purple-50/60 border border-purple-200 rounded-xl px-3 py-2.5 text-xs text-gray-700 font-medium focus:outline-none" />
+          <button onclick="copyPlatformLink()" class="bg-inwi-violet hover:bg-inwi-magenta text-white text-xs font-bold px-4 py-2.5 rounded-xl shrink-0 transition cursor-pointer">
+            Copier
+          </button>
+        </div>
+      </div>
+      <button onclick="shareOnWhatsApp()" class="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold py-3 rounded-xl shadow-sm transition cursor-pointer">
+        <span>📲 Envoyer l'invitation sur WhatsApp</span>
+      </button>
+      <div id="localHostTip" class="hidden bg-pink-50 border border-pink-200 rounded-xl p-3.5 text-xs text-gray-700 space-y-1">
+        <p class="font-bold text-inwi-magenta">Déploiement GitHub Pages :</p>
+        <p>Déposez ce fichier <strong>index.html</strong> dans votre dépôt GitHub puis activez <strong>Settings &rarr; Pages</strong> pour obtenir votre lien public.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFICATION TOAST -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden bg-inwi-violet text-white text-sm font-medium px-5 py-3.5 rounded-xl shadow-lg border border-pink-400/40 max-w-sm"></div>
+
+  <script>
+    const REGIONS = [
+      "Rabat-Salé-Kénitra",
+      "Casablanca-Settat",
+      "Marrakech-Safi",
+      "Souss-Massa",
+      "Drâa-Tafilalet",
+      "Fès-Meknès",
+      "Tanger-Tétouan-Al Hoceïma",
+      "Oriental",
+      "Béni Mellal-Khénifra",
+      "Guelmim-Oued Noun",
+      "Laâyoune-Sakia El Hamra",
+      "Dakhla-Oued Ed-Dahab"
+    ];
+
+    const ROLE_PERMISSIONS = {
+      benevole: {
+        label: "Profil : Bénévole (inwi ou externe)",
+        desc: "Vous pouvez postuler aux missions, gérer votre passeport et télécharger votre attestation PDF. Le suivi des 40 écoles est en lecture seule.",
+        badges: ["✓ Postuler aux missions", "✓ Passeport & PDF", "🔒 Écoles en lecture seule"],
+        canEditSchools: false,
+        canPublishMission: false,
+        canDeleteMission: false,
+        canExportCSV: false,
+        isRSE: false
+      },
+      association: {
+        label: "Profil : Association locale relais",
+        desc: "Vous pouvez mettre à jour l'avancement des écoles (+25%), ajouter des notes terrain et publier de nouvelles missions locales.",
+        badges: ["✓ Mise à jour écoles (+25%)", "✓ Publier une mission", "✓ Notes terrain"],
+        canEditSchools: true,
+        canPublishMission: true,
+        canDeleteMission: false,
+        canExportCSV: false,
+        isRSE: false
+      },
+      rse: {
+        label: "Profil : Direction RSE / Référent",
+        desc: "Accès complet : pilotage des 40 écoles, publication et suppression de missions, export CSV national et tableau de bord exécutif.",
+        badges: ["✓ Administration complète", "✓ Export CSV national", "✓ Pilotage 12 régions"],
+        canEditSchools: true,
+        canPublishMission: true,
+        canDeleteMission: true,
+        canExportCSV: true,
+        isRSE: true
+      }
+    };
+
+    const initialSchools = [
+      { id: 101, name: "École Rurale Sidi Taïbi", commune: "Sidi Taïbi · Kénitra", region: "Rabat-Salé-Kénitra", assoc: "Relais Jeunes Bouregreg", students: 260, pcs: 12, connectivity: "4G+ Box inwi", progress: 100, status: "Opérationnelle", note: "Salle inaugurée avec 12 postes actifs." },
+      { id: 102, name: "École Douar Maâmora", commune: "Sidi Allal El Bahraoui · Khémisset", region: "Rabat-Salé-Kénitra", assoc: "Association Zemmour Avenir", students: 215, pcs: 10, connectivity: "4G+ Box inwi", progress: 75, status: "Ateliers en cours", note: "" },
+      { id: 103, name: "École Oulmès Centre", commune: "Oulmès · Khémisset", region: "Rabat-Salé-Kénitra", assoc: "Atlas Moyen Solidaire", students: 290, pcs: 12, connectivity: "4G+ Box inwi", progress: 50, status: "Installation matériel", note: "" },
+      { id: 104, name: "École Mograne Nord", commune: "Mograne · Kénitra", region: "Rabat-Salé-Kénitra", assoc: "Gharb Inclusion Numérique", students: 195, pcs: 10, connectivity: "4G+ Box inwi", progress: 25, status: "Planifiée 2026", note: "" },
+
+      { id: 105, name: "École Oulad Saïd", commune: "Oulad Saïd · Settat", region: "Casablanca-Settat", assoc: "Chaouia Éducation", students: 245, pcs: 12, connectivity: "4G+ Box inwi", progress: 100, status: "Opérationnelle", note: "" },
+      { id: 106, name: "École Sidi Bennour Est", commune: "Lâounate · Sidi Bennour", region: "Casablanca-Settat", assoc: "Doukkala Jeunesse", students: 230, pcs: 10, connectivity: "4G+ Box inwi", progress: 75, status: "Ateliers en cours", note: "" },
+      { id: 107, name: "École Ben Ahmed Rurale", commune: "Mrizig · Settat", region: "Casablanca-Settat", assoc: "Association Mzab Solidaire", students: 185, pcs: 10, connectivity: "4G+ Box inwi", progress: 50, status: "Installation matériel", note: "" },
+      { id: 108, name: "École Chtouka Littoral", commune: "Chtouka · El Jadida", region: "Casablanca-Settat", assoc: "Actions Citoyennes El Jadida", students: 270, pcs: 12, connectivity: "4G+ Box inwi", progress: 25, status: "Planifiée 2026", note: "" },
+
+      { id: 109, name: "École Aït Benhaddou / Al Haouz", commune: "Asni · Al Haouz", region: "Marrakech-Safi", assoc: "Atlas Solidaire", students: 310, pcs: 14, connectivity: "VSAT + 4G inwi", progress: 100, status: "Opérationnelle", note: "" },
+      { id: 110, name: "École Douar Talat N'Yaaqoub", commune: "Talat N'Yaaqoub · Al Haouz", region: "Marrakech-Safi", assoc: "Toubkal Solidarité", students: 225, pcs: 12, connectivity: "VSAT inwi", progress: 75, status: "Ateliers en cours", note: "" },
+      { id: 111, name: "École Tamanar Rurale", commune: "Tamanar · Essaouira", region: "Marrakech-Safi", assoc: "Haha Développement", students: 205, pcs: 10, connectivity: "4G+ Box inwi", progress: 50, status: "Installation matériel", note: "" },
+      { id: 112, name: "École Jemâa Shaim", commune: "Jemâa Shaim · Safi", region: "Marrakech-Safi", assoc: "Abda Avenir", students: 240, pcs: 12, connectivity: "4G+ Box inwi", progress: 25, status: "Planifiée 2026", note: "" },
+
+      { id: 113, name: "École Primaire Massa", commune: "Massa · Chtouka-Aït Baha", region: "Souss-Massa", assoc: "Souss Éducation Rurale", students: 280, pcs: 12, connectivity: "4G+ Box inwi", progress: 100, status: "Opérationnelle", note: "" },
+      { id: 114, name: "École Douar Tafraout", commune: "Tafraout · Tiznit", region: "Souss-Massa", assoc: "Anti-Atlas Connecté", students: 190, pcs: 10, connectivity: "VSAT inwi", progress: 75, status: "Ateliers en cours", note: "" },
+      { id: 115, name: "École Taliouine Centre", commune: "Taliouine · Taroudannt", region: "Souss-Massa", assoc: "Safran & Savoir", students: 255, pcs: 12, connectivity: "4G+ Box inwi", progress: 50, status: "Installation matériel", note: "" },
+      { id: 116, name: "École Imouzzer Ida Outanane", commune: "Imouzzer · Agadir", region: "Souss-Massa", assoc: "Tamazight Numérique", students: 175, pcs: 10, connectivity: "VSAT inwi", progress: 25, status: "Planifiée 2026", note: "" },
+
+      { id: 117, name: "École Primaire Imider", commune: "Imider · Tinghir", region: "Drâa-Tafilalet", assoc: "Assoc. Imider Développement", students: 265, pcs: 14, connectivity: "VSAT + 4G inwi", progress: 100, status: "Opérationnelle", note: "" },
+      { id: 118, name: "École Kelaât M'Gouna", commune: "Boumalne Dadès · Tinghir", region: "Drâa-Tafilalet", assoc: "Vallée des Roses Éduc.", students: 240, pcs: 12, connectivity: "4G+ Box inwi", progress: 75, status: "Ateliers en cours", note: "" },
+      { id: 119, name: "École Merzouga Oasis", commune: "Taouz · Errachidia", region: "Drâa-Tafilalet", assoc: "Tafilalet Inclusion", students: 180, pcs: 10, connectivity: "VSAT inwi", progress: 50, status: "Installation matériel", note: "" },
+      { id: 120, name: "École Tamegroute", commune: "Tamegroute · Zagora", region: "Drâa-Tafilalet", assoc: "Drâa Savoir & Avenir", students: 295, pcs: 12, connectivity: "4G+ Box inwi", progress: 25, status: "Planifiée 2026", note: "" },
+
+      { id: 121, name: "École Aïn Leuh", commune: "Aïn Leuh · Ifrane", region: "Fès-Meknès", assoc: "Cèdres & Savoir", students: 220, pcs: 12, connectivity: "4G+ Box inwi", progress: 100, status: "Opérationnelle", note: "" },
+      { id: 122, name: "École Ribat El Kheir", commune: "Ribat El Kheir · Sefrou", region: "Fès-Meknès", assoc: "Moyen Atlas Jeunes", students: 210, pcs: 10, connectivity: "4G+ Box inwi", progress: 75, status: "Ateliers en cours", note: "" },
+      { id: 123, name: "École Ghafsai Rurale", commune: "Ghafsai · Taounate", region: "Fès-Meknès", assoc: "Prérif Éducation", students: 250, pcs: 12, connectivity: "4G+ Box inwi", progress: 50, status: "Installation matériel", note: "" },
+      { id: 124, name: "École Boulemane Outat", commune: "Outat El Haj · Boulemane", region: "Fès-Meknès", assoc: "Moulouya Solidaire", students: 195, pcs: 10, connectivity: "VSAT inwi", progress: 25, status: "Planifiée 2026", note: "" },
+
+      { id: 125, name: "École Talassemtane", commune: "Bab Taza · Chefchaouen", region: "Tanger-Tétouan-Al Hoceïma", assoc: "Rif Inclusion Numérique", students: 235, pcs: 12, connectivity: "4G+ Box inwi", progress: 100, status: "Opérationnelle", note: "" },
+      { id: 126, name: "École Ketama Issaguen", commune: "Issaguen · Al Hoceïma", region: "Tanger-Tétouan-Al Hoceïma", assoc: "Rif Solidaire", students: 275, pcs: 12, connectivity: "VSAT inwi", progress: 75, status: "Ateliers en cours", note: "" },
+      { id: 127, name: "École Mokrisset", commune: "Mokrisset · Ouezzane", region: "Tanger-Tétouan-Al Hoceïma", assoc: "Ouezzane Avenir", students: 205, pcs: 10, connectivity: "4G+ Box inwi", progress: 50, status: "Installation matériel", note: "" },
+      { id: 128, name: "École Bni Boufrah", commune: "Bni Boufrah · Al Hoceïma", region: "Tanger-Tétouan-Al Hoceïma", assoc: "Méditerranée Éduc.", students: 185, pcs: 10, connectivity: "4G+ Box inwi", progress: 25, status: "Planifiée 2026", note: "" },
+
+      { id: 129, name: "École Figuig Nord", commune: "Figuig · Figuig", region: "Oriental", assoc: "Oasis Connectée Oriental", students: 210, pcs: 12, connectivity: "VSAT inwi", progress: 100, status: "Opérationnelle", note: "" },
+      { id: 130, name: "École Tendrara Plateau", commune: "Tendrara · Figuig", region: "Oriental", assoc: "Hauts Plateaux Solidaires", students: 175, pcs: 10, connectivity: "VSAT inwi", progress: 50, status: "Installation matériel", note: "" },
+      { id: 131, name: "École Tafoughalt", commune: "Tafoughalt · Berkane", region: "Oriental", assoc: "Béni Snassen Jeunes", students: 225, pcs: 12, connectivity: "4G+ Box inwi", progress: 75, status: "Ateliers en cours", note: "" },
+
+      { id: 132, name: "École Aït Bouguemez", commune: "Tabant · Azilal", region: "Béni Mellal-Khénifra", assoc: "Vallée Heureuse Éduc.", students: 245, pcs: 12, connectivity: "VSAT inwi", progress: 100, status: "Opérationnelle", note: "" },
+      { id: 133, name: "École Aguelmam Azigza", commune: "Ajdir · Khénifra", region: "Béni Mellal-Khénifra", assoc: "Zayane Avenir", students: 195, pcs: 10, connectivity: "4G+ Box inwi", progress: 50, status: "Installation matériel", note: "" },
+      { id: 134, name: "École Ouaouizeght", commune: "Ouaouizeght · Azilal", region: "Béni Mellal-Khénifra", assoc: "Tadla Solidaire", students: 230, pcs: 12, connectivity: "4G+ Box inwi", progress: 25, status: "Planifiée 2026", note: "" },
+
+      { id: 135, name: "École Amtoudi Oasis", commune: "Amtoudi · Guelmim", region: "Guelmim-Oued Noun", assoc: "Oued Noun Inclusion", students: 165, pcs: 10, connectivity: "VSAT inwi", progress: 100, status: "Opérationnelle", note: "" },
+      { id: 136, name: "École Akka Tata", commune: "Akka · Assa-Zag / Tata", region: "Guelmim-Oued Noun", assoc: "Bani Jeunesse", students: 185, pcs: 10, connectivity: "4G+ Box inwi", progress: 50, status: "Installation matériel", note: "" },
+
+      { id: 137, name: "École Foum El Oued", commune: "Foum El Oued · Laâyoune", region: "Laâyoune-Sakia El Hamra", assoc: "Sakia El Hamra Avenir", students: 240, pcs: 12, connectivity: "4G+ Box inwi", progress: 75, status: "Ateliers en cours", note: "" },
+      { id: 138, name: "École Es-Semara Rurale", commune: "Amgala · Es-Semara", region: "Laâyoune-Sakia El Hamra", assoc: "Sahara Éducation", students: 190, pcs: 10, connectivity: "VSAT inwi", progress: 25, status: "Planifiée 2026", note: "" },
+
+      { id: 139, name: "École Bir Gandouz", commune: "Bir Gandouz · Aousserd", region: "Dakhla-Oued Ed-Dahab", assoc: "Oued Ed-Dahab Solidaire", students: 160, pcs: 10, connectivity: "VSAT inwi", progress: 75, status: "Ateliers en cours", note: "" },
+      { id: 140, name: "École El Argoub", commune: "El Argoub · Oued Ed-Dahab", region: "Dakhla-Oued Ed-Dahab", assoc: "Perle du Sud Éduc.", students: 200, pcs: 12, connectivity: "4G+ Box inwi", progress: 50, status: "Installation matériel", note: "" }
+    ];
+
+    const initialMissions = [
+      { id: 1, schoolId: 117, title: "Installation Salle Multimédia · École Imider", region: "Drâa-Tafilalet", city: "Tinghir", type: "Installation matériel", date: "28 Nov. 2026", association: "Assoc. Imider Développement", spotsTotal: 8, spotsTaken: 6, joined: false },
+      { id: 2, schoolId: 101, title: "Atelier Éveil Numérique · École Sidi Taïbi", region: "Rabat-Salé-Kénitra", city: "Kénitra", type: "Atelier pédagogique", date: "02 Déc. 2026", association: "Relais Jeunes Bouregreg", spotsTotal: 6, spotsTaken: 4, joined: false },
+      { id: 3, schoolId: 110, title: "Équipement & Réseau · Talat N'Yaaqoub", region: "Marrakech-Safi", city: "Al Haouz", type: "Installation matériel", date: "05 Déc. 2026", association: "Toubkal Solidarité", spotsTotal: 10, spotsTaken: 7, joined: false },
+      { id: 4, schoolId: 125, title: "Atelier Initiation Code · École Talassemtane", region: "Tanger-Tétouan-Al Hoceïma", city: "Chefchaouen", type: "Atelier pédagogique", date: "12 Déc. 2026", association: "Rif Inclusion Numérique", spotsTotal: 5, spotsTaken: 5, joined: false },
+      { id: 5, schoolId: 113, title: "Maintenance & Suivi Enseignants · École Massa", region: "Souss-Massa", city: "Chtouka-Aït Baha", type: "Suivi & Maintenance", date: "13 Déc. 2026", association: "Souss Éducation Rurale", spotsTotal: 4, spotsTaken: 2, joined: false },
+      { id: 6, schoolId: 129, title: "Installation Classe Connectée · Figuig Nord", region: "Oriental", city: "Figuig", type: "Installation matériel", date: "19 Déc. 2026", association: "Oasis Connectée Oriental", spotsTotal: 8, spotsTaken: 3, joined: false },
+      { id: 7, schoolId: 107, title: "Câblage & Box 4G · École Ben Ahmed Rurale", region: "Casablanca-Settat", city: "Settat", type: "Installation matériel", date: "20 Déc. 2026", association: "Association Mzab Solidaire", spotsTotal: 6, spotsTaken: 4, joined: false },
+      { id: 8, schoolId: 122, title: "Atelier Scratch Primaire · Ribat El Kheir", region: "Fès-Meknès", city: "Sefrou", type: "Atelier pédagogique", date: "26 Déc. 2026", association: "Moyen Atlas Jeunes", spotsTotal: 6, spotsTaken: 3, joined: false },
+      { id: 9, schoolId: 132, title: "Suivi VSAT & Tablettes · Aït Bouguemez", region: "Béni Mellal-Khénifra", city: "Azilal", type: "Suivi & Maintenance", date: "02 Janv. 2027", association: "Vallée Heureuse Éduc.", spotsTotal: 5, spotsTaken: 2, joined: false },
+      { id: 10, schoolId: 135, title: "Atelier Sécurité Internet · Amtoudi Oasis", region: "Guelmim-Oued Noun", city: "Guelmim", type: "Atelier pédagogique", date: "09 Janv. 2027", association: "Oued Noun Inclusion", spotsTotal: 5, spotsTaken: 3, joined: false },
+      { id: 11, schoolId: 137, title: "Atelier Bureautique · Foum El Oued", region: "Laâyoune-Sakia El Hamra", city: "Laâyoune", type: "Atelier pédagogique", date: "16 Janv. 2027", association: "Sakia El Hamra Avenir", spotsTotal: 6, spotsTaken: 4, joined: false },
+      { id: 12, schoolId: 139, title: "Installation & Test VSAT · Bir Gandouz", region: "Dakhla-Oued Ed-Dahab", city: "Aousserd", type: "Installation matériel", date: "23 Janv. 2027", association: "Oued Ed-Dahab Solidaire", spotsTotal: 6, spotsTaken: 2, joined: false }
+    ];
+
+    let schools = JSON.parse(localStorage.getItem('diriddik_schools_v3')) || initialSchools;
+    let missions = JSON.parse(localStorage.getItem('diriddik_missions_v3')) || initialMissions;
+    let volunteerProfile = JSON.parse(localStorage.getItem('diriddik_profile_v3')) || null;
+    let volunteerCount = parseInt(localStorage.getItem('diriddik_count_v3')) || 148;
+    let currentRole = localStorage.getItem('diriddik_role_v3') || 'benevole';
+    let currentPage = 'accueil';
+
+    function populateRegionSelects() {
+      const opts = REGIONS.map(r => `<option value="${r}">${r}</option>`).join('');
+      document.getElementById('filterRegion').innerHTML = `<option value="all">Toutes les régions (12)</option>` + opts;
+      document.getElementById('filterSchoolRegion').innerHTML = `<option value="all">Toutes les régions (12)</option>` + opts;
+      document.getElementById('volRegion').innerHTML = opts;
+      document.getElementById('nmRegion').innerHTML = opts;
+    }
+
+    function navigateTo(pageId, skipHash) {
+      currentPage = pageId;
+      document.querySelectorAll('.app-page').forEach(p => p.classList.remove('active'));
+      const target = document.getElementById('page-' + pageId);
+      if (target) target.classList.add('active');
+
+      document.querySelectorAll('.nav-3d').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.page === pageId);
+      });
+
+      document.getElementById('mobileNav').classList.add('hidden');
+      if (!skipHash) {
+        try { history.replaceState(null, '', '#' + pageId); } catch (e) {}
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (pageId === 'impact') renderImpactDashboard();
+      if (pageId === 'ecoles') renderSchools();
+      if (pageId === 'missions') renderMissions();
+    }
+
+    function toggleMobileNav() {
+      document.getElementById('mobileNav').classList.toggle('hidden');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.remove('hidden');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => toast.classList.add('hidden'), 3600);
+    }
+
+    function toggleLowDataMode() {
+      document.body.classList.toggle('low-data-mode');
+      const isLow = document.body.classList.contains('low-data-mode');
+      document.getElementById('lowDataText').textContent = isLow ? 'Mode Bas Débit : ON' : 'Mode Bas Débit : OFF';
+      document.getElementById('lowDataDot').className = isLow ? 'w-2 h-2 rounded-full bg-amber-400' : 'w-2 h-2 rounded-full bg-emerald-400';
+      showToast(isLow ? 'Mode Bas Débit activé : interface allégée.' : 'Mode Standard activé.');
+    }
+
+    function applyRolePermissionsUI() {
+      const perm = ROLE_PERMISSIONS[currentRole];
+      document.getElementById('activeRoleBanner').textContent = perm.label;
+      document.getElementById('activeRoleDesc').textContent = perm.desc;
+      document.getElementById('activeRoleBadges').innerHTML = perm.badges.map(b =>
+        `<span class="text-xs font-bold bg-purple-50 text-inwi-violet border border-purple-200 px-2.5 py-1 rounded-lg">${b}</span>`
+      ).join('');
+
+      // Bouton publier mission (Association & RSE)
+      document.getElementById('btnNewMission').classList.toggle('hidden', !perm.canPublishMission);
+      // Export CSV (RSE uniquement)
+      document.getElementById('btnExportCSV').classList.toggle('hidden', !perm.canExportCSV);
+      // Panneau RSE sur Impact
+      document.getElementById('rseAdminPanel').classList.toggle('hidden', !perm.isRSE);
+
+      // Barres d'info permissions
+      const mBar = document.getElementById('missionsPermissionBar');
+      const sBar = document.getElementById('schoolsPermissionBar');
+      if (currentRole === 'benevole') {
+        mBar.className = 'text-xs font-semibold px-4 py-3 rounded-xl border bg-purple-50 border-purple-200 text-inwi-violet';
+        mBar.textContent = 'Droits Bénévole : vous pouvez postuler ou annuler votre participation aux missions.';
+        sBar.className = 'text-xs font-semibold px-4 py-3 rounded-xl border bg-gray-50 border-gray-200 text-gray-600';
+        sBar.textContent = 'Droits Bénévole : consultation en lecture seule. Passez en profil Association locale ou Direction RSE pour modifier l’avancement des écoles.';
+      } else if (currentRole === 'association') {
+        mBar.className = 'text-xs font-semibold px-4 py-3 rounded-xl border bg-teal-50 border-teal-200 text-inwi-teal';
+        mBar.textContent = 'Droits Association locale : vous pouvez publier de nouvelles missions locales et gérer les participants.';
+        sBar.className = 'text-xs font-semibold px-4 py-3 rounded-xl border bg-teal-50 border-teal-200 text-inwi-teal';
+        sBar.textContent = 'Droits Association locale : vous pouvez faire avancer les étapes des écoles (+25%) et enregistrer des notes terrain.';
+      } else {
+        mBar.className = 'text-xs font-semibold px-4 py-3 rounded-xl border bg-pink-50 border-pink-200 text-inwi-magenta';
+        mBar.textContent = 'Droits Direction RSE / Référent : accès complet (publication, clôture/suppression de missions et validation).';
+        sBar.className = 'text-xs font-semibold px-4 py-3 rounded-xl border bg-pink-50 border-pink-200 text-inwi-magenta';
+        sBar.textContent = 'Droits Direction RSE / Référent : accès complet (mise à jour des 40 écoles, notes terrain et export CSV national).';
+      }
+    }
+
+    function switchRole(role) {
+      currentRole = role;
+      localStorage.setItem('diriddik_role_v3', role);
+      applyRolePermissionsUI();
+      renderMissions();
+      renderSchools();
+      showToast(ROLE_PERMISSIONS[role].label + ' activé');
+    }
+
+    // Missions
+    function renderMissions() {
+      const perm = ROLE_PERMISSIONS[currentRole];
+      const reg = document.getElementById('filterRegion').value;
+      const type = document.getElementById('filterType').value;
+      const q = (document.getElementById('searchMission').value || '').toLowerCase().trim();
+      const grid = document.getElementById('missionsGrid');
+
+      const filtered = missions.filter(m => {
+        const matchReg = reg === 'all' || m.region === reg;
+        const matchType = type === 'all' || m.type === type;
+        const matchQ = !q || m.title.toLowerCase().includes(q) || m.city.toLowerCase().includes(q) || m.association.toLowerCase().includes(q);
+        return matchReg && matchType && matchQ;
+      });
+
+      const openCount = missions.filter(m => m.spotsTaken < m.spotsTotal).length;
+      document.getElementById('homeMissionsBadge').textContent = openCount + ' missions ouvertes';
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="col-span-full bg-white p-10 rounded-2xl border border-purple-100 text-center text-gray-500 text-sm">Aucune mission ne correspond à vos critères.</div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(m => {
+        const pct = Math.min(100, Math.round((m.spotsTaken / m.spotsTotal) * 100));
+        const isFull = m.spotsTaken >= m.spotsTotal && !m.joined;
+
+        return `
+          <div class="card-3d bg-white rounded-2xl border border-purple-100 p-6 flex flex-col justify-between shadow-sm hover:border-inwi-magenta">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-bold px-2.5 py-1 rounded-full ${m.type === 'Installation matériel' ? 'bg-purple-100 text-inwi-violet' : m.type === 'Atelier pédagogique' ? 'bg-pink-100 text-inwi-magenta' : 'bg-teal-100 text-inwi-teal'}">
+                  ${m.type}
+                </span>
+                <span class="text-xs text-gray-500 font-semibold">${m.date}</span>
+              </div>
+              <h3 class="font-extrabold text-inwi-violet text-base leading-snug">${m.title}</h3>
+              <div class="text-xs text-gray-600 space-y-1">
+                <p>📍 <strong>Région :</strong> ${m.region} (${m.city})</p>
+                <p>🤝 <strong>Relais :</strong> ${m.association}</p>
+              </div>
+            </div>
+
+            <div class="pt-5 mt-4 border-t border-gray-100 space-y-3">
+              <div>
+                <div class="flex justify-between text-xs font-semibold mb-1">
+                  <span class="text-gray-600">Bénévoles mobilisés</span>
+                  <span class="text-inwi-violet">${m.spotsTaken} / ${m.spotsTotal} places</span>
+                </div>
+                <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                  <div class="bg-inwi-magenta h-full rounded-full" style="width: ${pct}%"></div>
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <button
+                  onclick="toggleJoinMission(${m.id})"
+                  ${isFull ? 'disabled' : ''}
+                  class="flex-1 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                    m.joined
+                      ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                      : isFull
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-inwi-violet text-white hover:bg-inwi-magenta'
+                  }">
+                  ${m.joined ? '✓ Inscrit (Annuler)' : isFull ? 'Complète' : 'Postuler'}
+                </button>
+                ${m.schoolId ? `<button onclick="openSchoolDetail(${m.schoolId})" class="px-3 py-2.5 rounded-xl text-xs font-bold border border-purple-200 text-inwi-violet hover:bg-purple-50 cursor-pointer">Fiche école</button>` : ''}
+                ${perm.canDeleteMission ? `<button onclick="deleteMission(${m.id})" title="Supprimer (RSE)" class="px-2.5 py-2.5 rounded-xl text-xs font-bold border border-red-200 text-red-600 hover:bg-red-50 cursor-pointer">✕</button>` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function handleCreateMission(e) {
+      e.preventDefault();
+      const newM = {
+        id: Date.now(),
+        schoolId: null,
+        title: document.getElementById('nmTitle').value.trim(),
+        region: document.getElementById('nmRegion').value,
+        city: document.getElementById('nmCity').value.trim(),
+        type: document.getElementById('nmType').value,
+        date: document.getElementById('nmDate').value.trim(),
+        association: document.getElementById('nmAssoc').value.trim(),
+        spotsTotal: parseInt(document.getElementById('nmSpots').value) || 6,
+        spotsTaken: 0,
+        joined: false
+      };
+      missions.unshift(newM);
+      localStorage.setItem('diriddik_missions_v3', JSON.stringify(missions));
+      closeModal('newMissionModal');
+      e.target.reset();
+      renderMissions();
+      showToast('Nouvelle mission publiée : ' + newM.title);
+    }
+
+    function deleteMission(id) {
+      if (!ROLE_PERMISSIONS[currentRole].canDeleteMission) return;
+      missions = missions.filter(m => m.id !== id);
+      localStorage.setItem('diriddik_missions_v3', JSON.stringify(missions));
+      renderMissions();
+      showToast('Mission clôturée / supprimée.');
+    }
+
+    function toggleJoinMission(id) {
+      missions = missions.map(m => {
+        if (m.id === id) {
+          if (m.joined) {
+            m.joined = false;
+            m.spotsTaken = Math.max(0, m.spotsTaken - 1);
+            showToast('Participation annulée : ' + m.title);
+          } else {
+            m.joined = true;
+            m.spotsTaken += 1;
+            showToast('Affectation confirmée : ' + m.title);
+          }
+        }
+        return m;
+      });
+      localStorage.setItem('diriddik_missions_v3', JSON.stringify(missions));
+      renderMissions();
+      updateVolunteerCard();
+    }
+
+    // Inscription
+    function handleVolunteerRegister(e) {
+      e.preventDefault();
+      volunteerProfile = {
+        name: document.getElementById('volName').value.trim(),
+        phone: document.getElementById('volPhone').value.trim(),
+        cin: document.getElementById('volCin').value.trim().toUpperCase(),
+        role: document.getElementById('volRole').value,
+        region: document.getElementById('volRegion').value,
+        skill: document.getElementById('volSkill').value,
+        avail: document.getElementById('volAvail').value
+      };
+      volunteerCount += 1;
+      localStorage.setItem('diriddik_profile_v3', JSON.stringify(volunteerProfile));
+      localStorage.setItem('diriddik_count_v3', volunteerCount);
+      document.getElementById('liveVolunteerCount').textContent = volunteerCount + ' bénévoles';
+      updateVolunteerCard();
+      showToast('Passeport bénévole activé pour ' + volunteerProfile.name + ' !');
+    }
+
+    function updateVolunteerCard() {
+      const joined = missions.filter(m => m.joined);
+      document.getElementById('myMissionsCount').textContent = joined.length + (joined.length > 1 ? ' missions rejointes' : ' mission rejointe');
+      document.getElementById('myMissionsList').innerHTML = joined.map(m => `• ${m.title} (${m.date})`).join('<br>');
+
+      if (volunteerProfile) {
+        const initials = volunteerProfile.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        document.getElementById('cardAvatar').textContent = initials || 'DI';
+        document.getElementById('cardName').textContent = volunteerProfile.name;
+        document.getElementById('cardMeta').textContent = `${volunteerProfile.role} · ${volunteerProfile.region}`;
+        const cinEl = document.getElementById('cardCin');
+        if (volunteerProfile.cin) {
+          cinEl.textContent = `CIN / Pièce d'identité : ${volunteerProfile.cin}`;
+          cinEl.classList.remove('hidden');
+        }
+        document.getElementById('btnDownloadPassport').classList.remove('hidden');
+        let badgesHTML = `<span class="text-xs bg-purple-100 text-inwi-violet font-semibold px-2.5 py-1 rounded-lg">✓ Profil Vérifié</span>`;
+        badgesHTML += `<span class="text-xs bg-pink-100 text-inwi-magenta font-semibold px-2.5 py-1 rounded-lg">📍 ${volunteerProfile.region}</span>`;
+        if (joined.length >= 1) {
+          badgesHTML += `<span class="text-xs bg-amber-100 text-amber-800 font-semibold px-2.5 py-1 rounded-lg">🏅 Bénévole Actif</span>`;
+        }
+        document.getElementById('cardBadges').innerHTML = badgesHTML;
+      }
+    }
+
+
+    // Génération et téléchargement du Passeport Bénévole en PDF
+    function downloadPassportPDF() {
+      if (!volunteerProfile) {
+        showToast('Veuillez d’abord remplir et valider le formulaire.');
+        return;
+      }
+      const p = volunteerProfile;
+      const joined = missions.filter(m => m.joined);
+      const today = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+      const safeFile = 'Passeport_Dir_Iddik_' + p.name.replace(/[^a-zA-Z0-9_-]/g, '_') + '.pdf';
+
+      if (window.jspdf && window.jspdf.jsPDF) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
+
+        // En-tête violet
+        doc.setFillColor(75, 22, 105);
+        doc.rect(0, 0, 148, 34, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(15);
+        doc.text('PASSEPORT BENEVOLE DIR IDDIK', 74, 15, { align: 'center' });
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Classes Connectees · inwi & Fondation Al Mada', 74, 24, { align: 'center' });
+
+        // Cadre fiche
+        doc.setDrawColor(166, 28, 108);
+        doc.setLineWidth(1);
+        doc.roundedRect(12, 42, 124, 128, 4, 4);
+
+        doc.setTextColor(166, 28, 108);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(16);
+        doc.text(p.name.toUpperCase(), 20, 56);
+
+        doc.setTextColor(60, 60, 70);
+        doc.setFontSize(10);
+        const rows = [
+          ['CIN / Piece d identite :', p.cin || 'Non renseigne'],
+          ['Categorie :', p.role],
+          ['Region :', p.region],
+          ['Telephone WhatsApp :', p.phone],
+          ['Competence :', p.skill],
+          ['Disponibilite :', p.avail],
+          ['Missions rejointes :', String(joined.length)],
+          ['Date d activation :', today]
+        ];
+        let y = 70;
+        rows.forEach(([k, v]) => {
+          doc.setFont('helvetica', 'bold');
+          doc.text(k, 20, y);
+          doc.setFont('helvetica', 'normal');
+          doc.text(doc.splitTextToSize(String(v), 72), 68, y);
+          y += 11;
+        });
+
+        doc.setFontSize(8.5);
+        doc.setTextColor(120, 120, 130);
+        doc.text('Document genere depuis la plateforme collaborative Dir Iddik', 74, 192, { align: 'center' });
+
+        doc.save(safeFile);
+        showToast('Passeport PDF téléchargé : ' + safeFile);
+        return;
+      }
+
+      // Fallback PDF minimal natif
+      const txt = `PASSEPORT DIR IDDIK\nNom: ${p.name}\nCIN: ${p.cin}\nRole: ${p.role}\nRegion: ${p.region}\nTel: ${p.phone}\nDate: ${today}`;
+      const esc = s => s.replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+      const lines = txt.split('\n').map((l, i) => `BT /F1 13 Tf 50 ${760 - i * 24} Td (${esc(l)}) Tj ET`).join('\n');
+      const pdfBody = `%PDF-1.4\n1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj\n3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >> endobj\n4 0 obj << /Length ${lines.length} >> stream\n${lines}\nendstream endobj\n5 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj\nxref\n0 6\n0000000000 65535 f \ntrailer << /Size 6 /Root 1 0 R >>\nstartxref\n0\n%%EOF`;
+      const blob = new Blob([pdfBody], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = safeFile;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Passeport PDF téléchargé : ' + safeFile);
+    }
+
+    // Génération et téléchargement réel d'un fichier PDF pour l'attestation
+    function downloadAttestationPDF() {
+      const name = volunteerProfile ? volunteerProfile.name : 'Bénévole Dir Iddik';
+      const role = volunteerProfile ? volunteerProfile.role : 'Volontaire Citoyen';
+      const region = volunteerProfile ? volunteerProfile.region : 'Maroc (12 Régions)';
+      const joined = missions.filter(m => m.joined);
+      const today = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+      const safeFile = 'Attestation_Dir_Iddik_' + name.replace(/[^a-zA-Z0-9_-]/g, '_') + '.pdf';
+
+      if (window.jspdf && window.jspdf.jsPDF) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+        // Cadre magenta & violet
+        doc.setDrawColor(75, 22, 105);
+        doc.setLineWidth(2);
+        doc.rect(10, 10, 277, 190);
+        doc.setDrawColor(166, 28, 108);
+        doc.setLineWidth(0.8);
+        doc.rect(14, 14, 269, 182);
+
+        // Bandeau titre
+        doc.setFillColor(75, 22, 105);
+        doc.rect(14, 14, 269, 28, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(18);
+        doc.text('DIR IDDIK · CLASSES CONNECTÉES (INWI)', 148.5, 27, { align: 'center' });
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Programme de volontariat citoyen pour l’inclusion numérique des écoles rurales', 148.5, 35, { align: 'center' });
+
+        // Titre attestation
+        doc.setTextColor(166, 28, 108);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(24);
+        doc.text("ATTESTATION D'ENGAGEMENT CITOYEN", 148.5, 62, { align: 'center' });
+
+        doc.setTextColor(50, 50, 50);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(12);
+        doc.text("La Direction RSE d'inwi et le programme Dir Iddik certifient que :", 148.5, 80, { align: 'center' });
+
+        doc.setTextColor(75, 22, 105);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(22);
+        doc.text(name.toUpperCase(), 148.5, 95, { align: 'center' });
+
+        doc.setTextColor(70, 70, 70);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(12);
+        doc.text(`Statut : ${role}   |   Région : ${region}`, 148.5, 108, { align: 'center' });
+
+        const missionLine = joined.length > 0
+          ? `A participé activement à ${joined.length} mission(s) Classes Connectées : ${joined.map(m => m.title).slice(0, 2).join(' ; ')}`
+          : "S'est engagé(e) officiellement en tant que bénévole au sein du programme Classes Connectées 2026.";
+        const wrapped = doc.splitTextToSize(missionLine, 220);
+        doc.text(wrapped, 148.5, 124, { align: 'center' });
+
+        // Pied de page & signature
+        doc.setDrawColor(200, 200, 210);
+        doc.line(35, 165, 115, 165);
+        doc.line(182, 165, 262, 165);
+        doc.setFontSize(10);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Délivrée le ${today}`, 75, 173, { align: 'center' });
+        doc.text('Direction RSE · inwi / Dir Iddik', 222, 173, { align: 'center' });
+
+        doc.save(safeFile);
+        showToast('Attestation PDF téléchargée : ' + safeFile);
+        return;
+      }
+
+      // Fallback PDF minimal natif si la librairie CDN est bloquée hors-ligne
+      const txt = `ATTESTATION DIR IDDIK - CLASSES CONNECTEES (INWI)\nBeneficiaire: ${name}\nRegion: ${region}\nMissions: ${joined.length}\nDate: ${today}`;
+      const esc = s => s.replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+      const lines = txt.split('\n').map((l, i) => `BT /F1 14 Tf 50 ${750 - i * 26} Td (${esc(l)}) Tj ET`).join('\n');
+      const pdfBody = `%PDF-1.4\n1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj\n3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >> endobj\n4 0 obj << /Length ${lines.length} >> stream\n${lines}\nendstream endobj\n5 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj\nxref\n0 6\n0000000000 65535 f \ntrailer << /Size 6 /Root 1 0 R >>\nstartxref\n0\n%%EOF`;
+      const blob = new Blob([pdfBody], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = safeFile;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Attestation PDF téléchargée : ' + safeFile);
+    }
+
+    // 40 Écoles
+    function renderSchools() {
+      const perm = ROLE_PERMISSIONS[currentRole];
+      const reg = document.getElementById('filterSchoolRegion').value;
+      const st = document.getElementById('filterSchoolStatus').value;
+      const q = (document.getElementById('searchSchool').value || '').toLowerCase().trim();
+
+      const filtered = schools.filter(s => {
+        const mReg = reg === 'all' || s.region === reg;
+        const mSt = st === 'all' || s.status === st;
+        const mQ = !q || s.name.toLowerCase().includes(q) || s.commune.toLowerCase().includes(q) || s.assoc.toLowerCase().includes(q);
+        return mReg && mSt && mQ;
+      });
+
+      const opCount = schools.filter(s => s.progress === 100).length;
+      const atCount = schools.filter(s => s.progress === 75).length;
+      const instCount = schools.filter(s => s.progress === 50).length;
+      const planCount = schools.filter(s => s.progress === 25).length;
+
+      document.getElementById('homeOperationalBadge').textContent = `${opCount} / ${schools.length} opérationnelles`;
+      document.getElementById('schoolsVisibleCount').textContent = `${filtered.length} / ${schools.length} écoles affichées`;
+
+      document.getElementById('schoolsSummaryCards').innerHTML = `
+        <div class="bg-white border border-emerald-200 rounded-2xl p-4">
+          <div class="text-xs font-bold text-emerald-700 uppercase">Opérationnelles (100%)</div>
+          <div class="text-2xl font-extrabold text-inwi-violet mt-1">${opCount} écoles</div>
+        </div>
+        <div class="bg-white border border-teal-200 rounded-2xl p-4">
+          <div class="text-xs font-bold text-inwi-teal uppercase">Ateliers en cours (75%)</div>
+          <div class="text-2xl font-extrabold text-inwi-violet mt-1">${atCount} écoles</div>
+        </div>
+        <div class="bg-white border border-pink-200 rounded-2xl p-4">
+          <div class="text-xs font-bold text-inwi-magenta uppercase">Installation (50%)</div>
+          <div class="text-2xl font-extrabold text-inwi-violet mt-1">${instCount} écoles</div>
+        </div>
+        <div class="bg-white border border-purple-200 rounded-2xl p-4">
+          <div class="text-xs font-bold text-gray-500 uppercase">Planifiées 2026 (25%)</div>
+          <div class="text-2xl font-extrabold text-inwi-violet mt-1">${planCount} écoles</div>
+        </div>
+      `;
+
+      const tbody = document.getElementById('schoolsTableBody');
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-gray-500 text-sm">Aucune école ne correspond à ce filtre.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(s => {
+        const badgeColor = s.progress === 100
+          ? 'bg-emerald-100 text-emerald-800'
+          : s.progress >= 75
+          ? 'bg-teal-100 text-teal-800'
+          : s.progress >= 50
+          ? 'bg-pink-100 text-inwi-magenta'
+          : 'bg-purple-100 text-inwi-violet';
+
+        return `
+          <tr class="hover:bg-purple-50/40 transition">
+            <td class="py-3.5 px-4">
+              <div class="font-bold text-inwi-violet">${s.name}</div>
+              <div class="text-xs text-gray-500">${s.commune}</div>
+            </td>
+            <td class="py-3.5 px-4 text-xs font-medium text-gray-700">${s.region}</td>
+            <td class="py-3.5 px-4 text-xs text-gray-600">${s.assoc}</td>
+            <td class="py-3.5 px-4 text-xs font-bold text-gray-700">${s.students} élèves</td>
+            <td class="py-3.5 px-4 w-44">
+              <div class="flex items-center gap-2">
+                <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+                  <div class="bg-inwi-teal h-full rounded-full" style="width: ${s.progress}%"></div>
+                </div>
+                <span class="text-xs font-bold text-gray-700">${s.progress}%</span>
+              </div>
+            </td>
+            <td class="py-3.5 px-4">
+              <span class="text-xs font-bold px-2.5 py-1 rounded-full whitespace-nowrap ${badgeColor}">${s.status}</span>
+            </td>
+            <td class="py-3.5 px-4 text-right whitespace-nowrap space-x-2">
+              <button onclick="openSchoolDetail(${s.id})" class="text-xs font-bold text-inwi-violet hover:underline cursor-pointer">Détails</button>
+              ${perm.canEditSchools
+                ? `<button onclick="advanceSchool(${s.id})" class="text-xs font-bold text-inwi-magenta hover:underline cursor-pointer">+25%</button>`
+                : `<span class="text-[11px] text-gray-400">🔒</span>`
+              }
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function advanceSchool(id) {
+      if (!ROLE_PERMISSIONS[currentRole].canEditSchools) {
+        showToast('Action réservée aux Associations locales et à la Direction RSE.');
+        return;
+      }
+      schools = schools.map(s => {
+        if (s.id === id) {
+          s.progress = s.progress >= 100 ? 25 : Math.min(100, s.progress + 25);
+          if (s.progress === 100) s.status = 'Opérationnelle';
+          else if (s.progress >= 75) s.status = 'Ateliers en cours';
+          else if (s.progress >= 50) s.status = 'Installation matériel';
+          else s.status = 'Planifiée 2026';
+          showToast(`Suivi mis à jour : ${s.name} (${s.progress} %)`);
+        }
+        return s;
+      });
+      localStorage.setItem('diriddik_schools_v3', JSON.stringify(schools));
+      renderSchools();
+      if (currentPage === 'impact') renderImpactDashboard();
+    }
+
+    function saveSchoolNote(id) {
+      if (!ROLE_PERMISSIONS[currentRole].canEditSchools) return;
+      const val = document.getElementById('schoolNoteInput').value.trim();
+      schools = schools.map(s => s.id === id ? { ...s, note: val } : s);
+      localStorage.setItem('diriddik_schools_v3', JSON.stringify(schools));
+      showToast('Note terrain enregistrée !');
+      openSchoolDetail(id);
+    }
+
+    function openSchoolDetail(id) {
+      const s = schools.find(x => x.id === id);
+      if (!s) return;
+      const perm = ROLE_PERMISSIONS[currentRole];
+      document.getElementById('smRegion').textContent = s.region;
+      document.getElementById('smTitle').textContent = s.name;
+      document.getElementById('smMeta').textContent = `${s.commune} · Relais : ${s.assoc}`;
+
+      const steps = [
+        { pct: 25, label: 'Cadrage & validation convention locale' },
+        { pct: 50, label: 'Installation postes PC, vidéoprojecteur & réseau ' + s.connectivity },
+        { pct: 75, label: 'Ateliers numériques élèves & formation enseignants' },
+        { pct: 100, label: 'Classe Connectée 100 % opérationnelle' }
+      ];
+
+      document.getElementById('smBody').innerHTML = `
+        <div class="grid grid-cols-3 gap-3 bg-purple-50/60 p-3.5 rounded-2xl border border-purple-100 text-center">
+          <div><div class="font-extrabold text-base text-inwi-violet">${s.students}</div><div class="text-[11px] text-gray-500">Élèves</div></div>
+          <div><div class="font-extrabold text-base text-inwi-magenta">${s.pcs} PC</div><div class="text-[11px] text-gray-500">Équipement</div></div>
+          <div><div class="font-extrabold text-xs text-inwi-teal pt-1">${s.connectivity}</div><div class="text-[11px] text-gray-500">Réseau inwi</div></div>
+        </div>
+        <div class="space-y-2">
+          <div class="font-bold text-inwi-violet">Étapes de déploiement (${s.progress}%) :</div>
+          ${steps.map(st => `
+            <div class="flex items-center gap-2.5 p-2.5 rounded-xl border ${s.progress >= st.pct ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-gray-50 border-gray-200 text-gray-500'}">
+              <span class="font-extrabold">${s.progress >= st.pct ? '✓' : '○'}</span>
+              <span>${st.label}</span>
+            </div>
+          `).join('')}
+        </div>
+        ${perm.canEditSchools ? `
+          <div class="space-y-2 pt-1">
+            <label class="font-bold text-inwi-violet block">Note terrain (Association / RSE) :</label>
+            <div class="flex gap-2">
+              <input id="schoolNoteInput" type="text" value="${(s.note || '').replace(/"/g, '&quot;')}" placeholder="Ajouter une observation terrain..." class="flex-1 border border-gray-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-inwi-magenta" />
+              <button onclick="saveSchoolNote(${s.id})" class="bg-inwi-violet text-white font-bold px-3 py-2 rounded-xl text-xs cursor-pointer">Enregistrer</button>
+            </div>
+          </div>
+        ` : (s.note ? `<div class="bg-purple-50 p-3 rounded-xl text-gray-700"><strong>Note terrain :</strong> ${s.note}</div>` : '')}
+        <div class="flex gap-2 pt-2">
+          ${perm.canEditSchools ? `<button onclick="advanceSchool(${s.id}); openSchoolDetail(${s.id});" class="flex-1 bg-inwi-magenta text-white font-bold py-2.5 rounded-xl cursor-pointer">Faire avancer (+25%)</button>` : ''}
+          <button onclick="closeModal('schoolModal')" class="flex-1 bg-gray-100 text-gray-700 font-bold py-2.5 rounded-xl cursor-pointer">Fermer</button>
+        </div>
+      `;
+      document.getElementById('schoolModal').classList.remove('hidden');
+    }
+
+    function exportSchoolsCSV() {
+      if (!ROLE_PERMISSIONS[currentRole].canExportCSV) {
+        showToast('Export CSV réservé à la Direction RSE.');
+        return;
+      }
+      const headers = ['ID', 'Ecole', 'Commune', 'Region', 'Association', 'Eleves', 'Postes_PC', 'Connectivite', 'Avancement_%', 'Statut', 'Note'];
+      const rows = schools.map(s => [s.id, s.name, s.commune, s.region, s.assoc, s.students, s.pcs, s.connectivity, s.progress, s.status, s.note || '']);
+      const csv = [headers, ...rows].map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'dir_iddik_40_ecoles_2026.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Export CSV des 40 écoles téléchargé !');
+    }
+
+    function resetDemoData() {
+      localStorage.removeItem('diriddik_schools_v3');
+      localStorage.removeItem('diriddik_missions_v3');
+      schools = JSON.parse(JSON.stringify(initialSchools));
+      missions = JSON.parse(JSON.stringify(initialMissions));
+      renderSchools();
+      renderMissions();
+      renderImpactDashboard();
+      showToast('Données de démonstration réinitialisées.');
+    }
+
+    // Kits & Référents
+    function openKitModal(kind) {
+      const data = {
+        guide: {
+          tag: 'Tutoriel 3 min · Hors-ligne',
+          title: 'Prise en main de la plateforme Dir Iddik',
+          body: `
+            <p><strong>1. Créez votre profil unique :</strong> Rendez-vous dans l'onglet <em>Inscription</em> pour renseigner votre région et vos disponibilités.</p>
+            <p><strong>2. Choisissez une mission :</strong> Dans <em>Missions</em>, filtrez par votre région et cliquez sur <em>Postuler</em>.</p>
+            <p><strong>3. Sur le terrain :</strong> Activez le <em>Mode Bas Débit</em> en haut de l'écran si la connexion est faible, et mettez à jour l'avancement de l'école.</p>
+          `
+        },
+        tech: {
+          tag: 'Kit Technique · Salle Multimédia',
+          title: 'Check-list d’installation Classe Connectée',
+          body: `
+            <p><strong>• Énergie & Sécurité :</strong> Vérifier les multiprises parafoudre et la stabilité électrique de la salle.</p>
+            <p><strong>• Réseau inwi :</strong> Positionner la Box 4G+ ou l'antenne VSAT près d'une fenêtre dégagée, tester le débit (min. 10 Mbps).</p>
+            <p><strong>• Postes PC :</strong> Brancher les 10 à 14 postes, activer le filtrage parental et vérifier les ressources éducatives hors-ligne.</p>
+          `
+        },
+        pedago: {
+          tag: 'Pédagogie · Atelier 2h',
+          title: 'Scénario d’atelier numérique primaire',
+          body: `
+            <p><strong>00h00 – 00h25 :</strong> Découverte ludique de l'ordinateur (souris, clavier, règles de la salle).</p>
+            <p><strong>00h25 – 01h15 :</strong> Initiation au code visuel (Scratch Junior / puzzles logiques) en binômes.</p>
+            <p><strong>01h15 – 01h45 :</strong> Sensibilisation à un usage sûr d'internet et jeux éducatifs.</p>
+            <p><strong>01h45 – 02h00 :</strong> Restitution des élèves et remise symbolique des badges.</p>
+          `
+        }
+      };
+      const item = data[kind];
+      document.getElementById('kmTag').textContent = item.tag;
+      document.getElementById('kmTitle').textContent = item.title;
+      document.getElementById('kmBody').innerHTML = item.body;
+      document.getElementById('kitModal').classList.remove('hidden');
+    }
+
+    function renderReferents() {
+      document.getElementById('referentsGrid').innerHTML = REGIONS.map((r, i) => `
+        <div class="border border-purple-100 rounded-xl p-3.5 bg-purple-50/40 flex items-center justify-between gap-2">
+          <div>
+            <div class="font-bold text-inwi-violet">${r}</div>
+            <div class="text-gray-500">Référent Zone #${i + 1} · Équipe Dir Iddik</div>
+          </div>
+          <span class="text-[11px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">Actif</span>
+        </div>
+      `).join('');
+    }
+
+    // Impact & KPIs dynamiques
+    function renderImpactDashboard() {
+      const totalStudents = schools.reduce((acc, s) => acc + s.students, 0);
+      const avgProg = Math.round(schools.reduce((acc, s) => acc + s.progress, 0) / schools.length);
+      document.getElementById('kpiStudentsVal').textContent = totalStudents.toLocaleString('fr-FR');
+      document.getElementById('kpiAvgProgressVal').textContent = avgProg + ' %';
+      document.getElementById('kpiAvgProgressBar').style.width = avgProg + '%';
+
+      const container = document.getElementById('regionalBreakdown');
+      container.innerHTML = REGIONS.map(r => {
+        const list = schools.filter(s => s.region === r);
+        const avg = list.length ? Math.round(list.reduce((a, b) => a + b.progress, 0) / list.length) : 0;
+        const done = list.filter(s => s.progress === 100).length;
+        return `
+          <div class="border border-purple-100 rounded-2xl p-4 bg-purple-50/30 space-y-2">
+            <div class="flex justify-between items-center text-xs">
+              <span class="font-bold text-inwi-violet">${r}</span>
+              <span class="font-bold text-inwi-magenta">${list.length} écoles</span>
+            </div>
+            <div class="w-full bg-purple-100 h-2 rounded-full overflow-hidden">
+              <div class="bg-inwi-magenta h-full rounded-full" style="width: ${avg}%"></div>
+            </div>
+            <div class="flex justify-between text-[11px] text-gray-500">
+              <span>${done} opérationnelle(s)</span>
+              <span class="font-bold text-gray-700">${avg} % moyen</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function ratePlatform(score) {
+      document.getElementById('kpiSatVal').textContent = score + '.0 / 5';
+      document.getElementById('kpiSatBar').style.width = (score * 20) + '%';
+      showToast(`Merci ! Votre note de ${score}/5 a été enregistrée dans le tableau de bord RSE.`);
+    }
+
+    function openAttestationModal() {
+      const name = volunteerProfile ? volunteerProfile.name : 'Bénévole Dir Iddik (Profil visiteur)';
+      const region = volunteerProfile ? volunteerProfile.region : 'Maroc';
+      const joinedCount = missions.filter(m => m.joined).length;
+      const today = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+      document.getElementById('attName').textContent = name;
+      document.getElementById('attDetails').textContent = `A contribué activement au programme Classes Connectées dans la région ${region} (${joinedCount} mission(s) enregistrée(s) sur la plateforme).`;
+      document.getElementById('attDate').textContent = `Délivrée le ${today} · Direction RSE inwi`;
+      document.getElementById('attestationModal').classList.remove('hidden');
+    }
+
+    function openShareModal() {
+      const modal = document.getElementById('shareModal');
+      const input = document.getElementById('shareUrlInput');
+      const status = document.getElementById('shareUrlStatus');
+      const tip = document.getElementById('localHostTip');
+      input.value = 'https://sites.google.com/view/diir-iddik-inwi?usp=sharing';
+      status.textContent = '● Lien actif';
+      tip.classList.add('hidden');
+      modal.classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function copyPlatformLink() {
+      const input = document.getElementById('shareUrlInput');
+      input.select();
+      input.setSelectionRange(0, 99999);
+      document.execCommand('copy');
+      showToast('Lien copié !');
+    }
+
+    function shareOnWhatsApp() {
+      const url = document.getElementById('shareUrlInput').value;
+      const text = encodeURIComponent(`Rejoignez Dir Iddik · Classes Connectées (inwi) pour équiper les écoles rurales : ${url}`);
+      window.open(`https://wa.me/?text=${text}`, '_blank');
+    }
+
+    // Initialisation
+    populateRegionSelects();
+    document.getElementById('roleSwitcher').value = currentRole;
+    applyRolePermissionsUI();
+    document.getElementById('liveVolunteerCount').textContent = volunteerCount + ' bénévoles';
+    renderMissions();
+    renderSchools();
+    renderReferents();
+    renderImpactDashboard();
+    updateVolunteerCard();
+
+    const initialHash = (window.location.hash || '').replace('#', '');
+    if (['accueil', 'missions', 'inscription', 'ecoles', 'communication', 'impact'].includes(initialHash)) {
+      navigateTo(initialHash, true);
+    }
+  </script>
+</body>
+</html>
